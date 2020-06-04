@@ -8,7 +8,7 @@ SwiftBelt is a macOS enumerator inspired by @harmjoy's Windows-based Seatbelt en
 
 You can run the included SwiftBelt mach-o binary in the root directory of this repo or you can edit the Swift code and rebuild a new binary.
 
-*To use the included mach-o:*
+**To use the included mach-o:**
 
 1. Once downloaded, copy to the desired host and clear the quarantine attribute ($ xattr -c SwiftBelt) and set as executable ($ chmod +x SwiftBelt)
 2. To see the help menu: ./SwiftBelt -h
@@ -45,7 +45,7 @@ To specify certain options:  *./SwiftBelt [option1] [option2] [option3]...*
 
 
 
-*To edit the Swift code and rebuild your own mach-o:*
+**To edit the Swift code and rebuild your own mach-o:**
 1. Open the xcodeproj file for SwiftBelt in Xcode 
 
 2. Edit the code in main.swift code as needed in Xcode
