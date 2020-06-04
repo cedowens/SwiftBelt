@@ -44,6 +44,7 @@ To specify certain options:  *./SwiftBelt [option1] [option2] [option3]...*
 **Example:  *./SwiftBelt -SystemInfo -Clipboard -SecurityTools ...***
 
 
+
 *To edit the Swift code and rebuild your own mach-o:*
 1. Open the xcodeproj file for SwiftBelt in Xcode 
 
