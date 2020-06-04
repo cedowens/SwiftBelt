@@ -31,7 +31,7 @@ SwiftBelt Options:
 
 **-BrowserHistory** --> Attempt to pull Safari, Firefox, Chrome, and Quarantine history
 
-**-SlackExtract** --> Check if Slack is present and if so read cookie, downloads, and workspaces info
+**-SlackExtract** --> Check if Slack is present and if so read cookie, downloads, and workspaces info (leverages research done by Cody Thomas)
 
 **-BhashHistory** --> Read bash history content
 
