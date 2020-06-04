@@ -4,6 +4,8 @@
 
 SwiftBelt is a macOS enumerator inspired by @harmjoy's Windows-based Seatbelt enumeration tool. SwiftBelt does not utilize any command line utilities and instead uses Swift code (leveraging the Cocoa Framework, Foundation libraries, OSAKit libraries, etc.) to perform system enumeration. This can be leveraged on the offensive side (i.e., perform enumeration once you gain access to a macOS host) or on the defensive side (i.e., pulling back host info on a compromised machine). I intentionally did not include any functions that cause pop-ups (ex: keychain enumeration).
 
+-----------------------
+
 ***Steps***
 
 You can run the included SwiftBelt mach-o binary in the root directory of this repo or you can edit the Swift code and rebuild a new binary.
@@ -55,3 +57,9 @@ To specify certain options:  *./SwiftBelt [option1] [option2] [option3]...*
 4. Copy to the desired host and clear the quarantine attribute ($ xattr -c SwiftBelt) and set as executable ($ chmod +x SwiftBelt)
 
 5. Execute 
+
+-----------------------
+
+***Detection***
+
+Though this tool does not use any command line utilities (which are easy to detect), this tool does read from several files on the system which can be detected by any tools that leverage the Endpoint Security Framework (these file reads in particular are captured by ES_EVENT_TYPE_NOTIFY_OPEN events within ESF).
