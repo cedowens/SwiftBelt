@@ -490,25 +490,7 @@ func LaunchAgents(){
 
         
     }
-    
-    let script = ##"tell application "System Events" to get the path of every login item"##
-    let p = OSAScript.init(source: script)
-    var compileErr : NSDictionary?
-    p.compileAndReturnError(&compileErr)
-    var scriptErr : NSDictionary?
-    let myresult = p.executeAndReturnError(&scriptErr)!
-    print("")
-    print("\(colorend)==> Login Item Info:\(green)")
-    if myresult != nil {
-        print(myresult)
-    } else {
-        print("\(red)[-] No Login Items found on this host.")
-    }
-    
-    print("\(yellow)##########################################\(colorend)")
-    
-    
-    
+  
     print("\(colorend)\(yellow)##########################################\(colorend)")
 }
 
