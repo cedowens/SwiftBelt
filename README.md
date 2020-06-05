@@ -31,7 +31,7 @@ SwiftBelt Options:
 
 **-LaunchAgents** --> List launch agents, launch daemons, and configuration profile files
 
-**-BrowserHistory** --> Attempt to pull Safari, Firefox, Chrome, and Quarantine history
+**-BrowserHistory** --> Attempt to pull Safari, Firefox, Chrome, and Quarantine history (note as FYI: if Chrome or Firefox is actively running, the tool will not be able to read the locked database to extract info)
 
 **-SlackExtract** --> Check if Slack is present and if so read cookie, downloads, and workspaces info (leverages research done by Cody Thomas)
 
