@@ -12,7 +12,7 @@ You can run the included SwiftBelt mach-o binary in the root directory of this r
 
 **To use the included mach-o:**
 
-1. Once downloaded, copy to the desired host and clear the quarantine attribute ($ xattr -c SwiftBelt) and set as executable ($ chmod +x SwiftBelt)
+1. Note: I did not sign the included mach-o. Therefore you will need to take these steps to remove the quarantine attribute in order to run: Once downloaded, copy to the desired host and clear the quarantine attribute ($ xattr -c SwiftBelt) and set as executable ($ chmod +x SwiftBelt)
 2. To see the help menu: ./SwiftBelt -h
 
 ***Help menu:***
