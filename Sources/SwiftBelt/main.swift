@@ -192,7 +192,6 @@ func SystemInfo(){
         for d in x{
             print(d)
         }
-        //print( try mySess!.nodeNames())
     } catch {
         print("\(red)[-] Error checking Open Directory Nodes.\(colorend)")
     }
@@ -223,14 +222,12 @@ func SystemInfo(){
             
         }
     
-    let internalAddys = getaddy()
-    //let internalAddys2 = internalAddys.joined(separator: ", ")
     print("")
     print("Internal IP Addresses:\(green)")
+    let internalAddys = getaddy()
     for ip in internalAddys{
         print(ip)
     }
-    //print(internalAddys2)
     
     print("")
     print("\(colorend)Environment variable info:\(green)")
@@ -346,12 +343,7 @@ func SystemInfo(){
     }
     
     print("\(colorend)\(yellow)##########################################\(colorend)")
-        
-    }
-    
-    
-    
-//}
+}
 
 func Clipboard(){
     let clipBoard = NSPasteboard.general
