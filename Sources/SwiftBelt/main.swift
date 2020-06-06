@@ -324,19 +324,26 @@ func SystemInfo(){
 
     if fileMan.fileExists(atPath: "/Users/\(uName)/.azure",isDirectory: &isDir){
         print("\(colorend)==>Azure Info Found:\(green)")
-        let enumerator = fileMan.enumerator(atPath: "/Users/\(uName)/.azure")
-        while let each = enumerator?.nextObject() as? String {
-            do {
-                print("\(colorend)\(each):\(green)")
-                let fileData = "/Users/\(uName)/.azure/\(each)"
-                let fileData2 = try String(contentsOfFile: fileData)
-                if fileData2 != nil {
-                    print(fileData2)
-                }
 
-            } catch {
-                print("\(red)[-] Error attempting to get file contents for /Users/\(uName)/.azure/\(each)\(colorend)\n")
-            }
+        let azureProfilePath = "/Users/\(uName)/.azure/azureProfile.json"
+        do {
+            let azureProfileContents = try String(contentsOfFile: azureProfilePath)
+
+            print(azureProfilePath)
+            print(azureProfileContents)
+            print("")
+        } catch {
+            print("\(red)[-] Error attempting to get file contents for \(azureProfilePath)\(colorend)\n")
+        }
+
+        let azureTokensPath = "/Users/\(uName)/.azure/accessTokens.json"
+        do {
+            let azureTokensContents = try String(contentsOfFile: azureTokensPath)
+
+            print(azureTokensPath)
+            print(azureTokensContents)
+        } catch {
+            print("\(red)[-] Error attempting to get file contents for \(azureTokensPath)\(colorend)\n")
         }
     } else {
         print("\(red)[-] ~/.azure directory not found on this host\(colorend)")
