@@ -237,7 +237,7 @@ func SystemInfo(){
     }
     
     print("")
-    print("\(colorend)SSH/AWS/gcloud Credentials Search:\(green)")
+    print("\(colorend)SSH/AWS/gcloud/azure-cli Credentials Search:\(green)")
     let uName = NSUserName()
     if fileMan.fileExists(atPath: "/Users/\(uName)/.ssh",isDirectory: &isDir){
         print("\(colorend)==>SSH Key Info Found:\(green)")
