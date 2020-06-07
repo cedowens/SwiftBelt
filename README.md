@@ -21,7 +21,7 @@ SwiftBelt Options:
 
 **-SecurityTools** --> Check for the presence of common macOS security tools (at least the ones I am familiar with)
 
-**-SystemInfo** --> Pull back system info (wifi SSID info, open directory node info, internal IPs, ssh/aws/gcloud cred info, basic system info). If present on the host, this tool will display the contents of ssh keys, known hosts file, aws cred files, and gcloud token info
+**-SystemInfo** --> Pull back system info (wifi SSID info, open directory node info, internal IPs, ssh/aws/gcloud/azure-cli cred info, basic system info). If present on the host, this tool will display the contents of ssh keys, known hosts file, aws cred files, and gcloud token info
 
 **-Clipboard** --> Dump clipboard contents
 
