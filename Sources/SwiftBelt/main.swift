@@ -128,7 +128,7 @@ func SecCheck(){
         }
         // Knock Knock
         if processes2.contains("KnockKnock") || fileMan.fileExists(atPath: "/Applications/KnockKnock.app",isDirectory: &isDir) {
-            print("\(green)[+] Objective-See Knock Knock, persistent software detection, tool found\(colorend)")
+            print("\(green)[+] Objective-See Knock Knock, persistent software detection tool, found\(colorend)")
             b = 1
         }
         if processes2.contains("reikey") || fileMan.fileExists(atPath: "/Applications/ReiKey.app",isDirectory: &isDir) {
@@ -144,7 +144,7 @@ func SecCheck(){
             b = 1
         }
         if processes2.contains("blockblock") || fileMan.fileExists(atPath: "/Applications/BlockBlock Helper.app",isDirectory: &isDir) {
-            print("\(green)[+] Objective-See Block Block, persistant location monitoring tool, found\(colorend)")
+            print("\(green)[+] Objective-See Block Block, persistent location monitoring tool, found\(colorend)")
             b = 1
         }
         if processes2.contains("Netiquete") || fileMan.fileExists(atPath: "/Applications/Netiquette.app",isDirectory: &isDir) {
