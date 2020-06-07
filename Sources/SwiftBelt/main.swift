@@ -192,7 +192,6 @@ func SystemInfo(){
         for d in x{
             print(d)
         }
-        //print( try mySess!.nodeNames())
     } catch {
         print("\(red)[-] Error checking Open Directory Nodes.\(colorend)")
     }
@@ -223,14 +222,12 @@ func SystemInfo(){
             
         }
     
-    let internalAddys = getaddy()
-    //let internalAddys2 = internalAddys.joined(separator: ", ")
     print("")
     print("Internal IP Addresses:\(green)")
+    let internalAddys = getaddy()
     for ip in internalAddys{
         print(ip)
     }
-    //print(internalAddys2)
     
     print("")
     print("\(colorend)Environment variable info:\(green)")
@@ -323,14 +320,37 @@ func SystemInfo(){
         print("\(red)[-] ~/.config/gcloud/credentials.db not found on this host\(colorend)")
     }
     
-    
-    print("\(colorend)\(yellow)##########################################\(colorend)")
-        
+    print("")
+
+    if fileMan.fileExists(atPath: "/Users/\(uName)/.azure",isDirectory: &isDir){
+        print("\(colorend)==>Azure Info Found:\(green)")
+
+        let azureProfilePath = "/Users/\(uName)/.azure/azureProfile.json"
+        do {
+            let azureProfileContents = try String(contentsOfFile: azureProfilePath)
+
+            print(azureProfilePath)
+            print(azureProfileContents)
+            print("")
+        } catch {
+            print("\(red)[-] Error attempting to get file contents for \(azureProfilePath)\(colorend)\n")
+        }
+
+        let azureTokensPath = "/Users/\(uName)/.azure/accessTokens.json"
+        do {
+            let azureTokensContents = try String(contentsOfFile: azureTokensPath)
+
+            print(azureTokensPath)
+            print(azureTokensContents)
+        } catch {
+            print("\(red)[-] Error attempting to get file contents for \(azureTokensPath)\(colorend)\n")
+        }
+    } else {
+        print("\(red)[-] ~/.azure directory not found on this host\(colorend)")
     }
     
-    
-    
-//}
+    print("\(colorend)\(yellow)##########################################\(colorend)")
+}
 
 func Clipboard(){
     let clipBoard = NSPasteboard.general
