@@ -114,6 +114,51 @@ func SecCheck(){
             print("\(green)[+] Sophos antivirus found\(colorend)")
             b = 1
         }
+        if processes2.contains("lulu") || fileMan.fileExists(atPath: "/Library/Objective-See/Lulu",isDirectory: &isDir) || fileMan.fileExists(atPath: "/Applications/LuLu.app",isDirectory: &isDir) {
+            print("\(green)[+] Objective-See LuLu firewall found\(colorend)")
+            b = 1
+        }
+        if processes2.contains("dnd") || fileMan.fileExists(atPath: "/Library/Objective-See/DND",isDirectory: &isDir) || fileMan.fileExists(atPath: "/Applications/Do Not Disturb.app/",isDirectory: &isDir) {
+            print("\(green)[+] Objective-See Do Not Disturb, physical access detection tool, found\(colorend)")
+            b = 1
+        }
+        if processes2.contains("WhatsYourSign") || fileMan.fileExists(atPath: "/Applications/WhatsYourSign.app",isDirectory: &isDir) {
+            print("\(green)[+] Objective-See Whats Your Sign, code signature information tool, found\(colorend)")
+            b = 1
+        }
+        // Knock Knock
+        if processes2.contains("KnockKnock") || fileMan.fileExists(atPath: "/Applications/KnockKnock.app",isDirectory: &isDir) {
+            print("\(green)[+] Objective-See Knock Knock, persistent software detection tool, found\(colorend)")
+            b = 1
+        }
+        if processes2.contains("reikey") || fileMan.fileExists(atPath: "/Applications/ReiKey.app",isDirectory: &isDir) {
+            print("\(green)[+] Objective-See ReiKey, keyboard event taps detection tool, found\(colorend)")
+            b = 1
+        }
+        if processes2.contains("OverSight") || fileMan.fileExists(atPath: "/Applications/OverSight.app",isDirectory: &isDir) {
+            print("\(green)[+] Objective-See Over Sight, microphone and camera monitor tool, found\(colorend)")
+            b = 1
+        }
+        if processes2.contains("KextViewr") || fileMan.fileExists(atPath: "/Applications/KextViewr.app",isDirectory: &isDir) {
+            print("\(green)[+] Objective-See KextViewr, kernel module detection tool, found\(colorend)")
+            b = 1
+        }
+        if processes2.contains("blockblock") || fileMan.fileExists(atPath: "/Applications/BlockBlock Helper.app",isDirectory: &isDir) {
+            print("\(green)[+] Objective-See Block Block, persistent location monitoring tool, found\(colorend)")
+            b = 1
+        }
+        if processes2.contains("Netiquete") || fileMan.fileExists(atPath: "/Applications/Netiquette.app",isDirectory: &isDir) {
+            print("\(green)[+] Objective-See Netiquette, network monitoring tool, found\(colorend)")
+            b = 1
+        }
+        if processes2.contains("processmonitor") || fileMan.fileExists(atPath: "/Applications/ProcessMonitor.app",isDirectory: &isDir) {
+            print("\(green)[+] Objective-See ProcessMonitor, process monitoring tool, found\(colorend)")
+            b = 1
+        }
+        if processes2.contains("filemonitor") || fileMan.fileExists(atPath: "/Applications/FileMonitor.app",isDirectory: &isDir) {
+            print("\(green)[+] Objective-See FileMonitor, file monitoring tool, found\(colorend)")
+            b = 1
+        }
         
         if b == 0{
             print("[-] No security products found.")
