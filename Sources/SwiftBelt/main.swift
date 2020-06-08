@@ -205,10 +205,11 @@ func SystemInfo(){
     k.compileAndReturnError(&compileErr)
     var scriptErr : NSDictionary?
     let myresult = k.executeAndReturnError(&scriptErr)!
+    let result = "\(myresult)".replacingOccurrences(of: "'utxt'", with: "").replacingOccurrences(of: "'siav'", with: "AppleScript version").replacingOccurrences(of: "(", with: "").replacingOccurrences(of: ")", with: "").replacingOccurrences(of: "sikv", with: "AppleScript Studio version").replacingOccurrences(of: "sisn", with: "Short User Name").replacingOccurrences(of: "siln", with: "Long User Name").replacingOccurrences(of: "siid", with: "user ID").replacingOccurrences(of: "siul", with: "User Locale").replacingOccurrences(of: "home", with: "Home Directory").replacingOccurrences(of: "file://", with: "").replacingOccurrences(of: "'alis'", with: "").replacingOccurrences(of: "sibv", with: "").replacingOccurrences(of: "sicn", with: "Computer Name").replacingOccurrences(of: "ldsa", with: "Host Name").replacingOccurrences(of: "siip", with: "IP Address").replacingOccurrences(of: "siea", with: "Primary Ethernet Address").replacingOccurrences(of: "sict", with: "CPU Type").replacingOccurrences(of: "sics", with: "CPU Speed").replacingOccurrences(of: "sipm", with: "Memory").replacingOccurrences(of: "<NSAppleEventDescriptor: {", with: "").replacingOccurrences(of: "}>", with: "").replacingOccurrences(of: ", ", with: "\n").replacingOccurrences(of: "'':\"Macintosh HD:\"", with: "").replacingOccurrences(of: "sisv", with: "OS Version")
     print("\(yellow)##########################################\(colorend)")
     print("==> System Info:\(green)")
     
-    print(myresult)
+    print(result)
     let mySess = ODSession.default()
     do {
         let x = try mySess!.nodeNames()
@@ -282,7 +283,7 @@ func SystemInfo(){
     }
     
     print("")
-    print("\(colorend)SSH/AWS/gcloud/azure-cli Credentials Search:\(green)")
+    print("\(colorend)SSH/AWS/gcloud Credentials Search:\(green)")
     let uName = NSUserName()
     if fileMan.fileExists(atPath: "/Users/\(uName)/.ssh",isDirectory: &isDir){
         print("\(colorend)==>SSH Key Info Found:\(green)")
@@ -963,7 +964,7 @@ else {
             print("\(cyan)-LaunchAgents --> \(colorend)List launch agents, launch daemons, and configuration profile files")
             print("\(cyan)-BrowserHistory --> \(colorend)Attempt to pull Safari, Firefox, Chrome, and Quarantine history")
             print("\(cyan)-SlackExtract --> \(colorend)Check if Slack is present and if so read cookie, downloads, and workspaces info")
-            print("\(cyan)-BhashHistory --> \(colorend)Read bash history content")
+            print("\(cyan)-BashHistory --> \(colorend)Read bash history content")
             print("")
             print("\(yellow)Usage:\(colorend)")
             print("To run all options:  \(binname)")
