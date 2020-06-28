@@ -985,7 +985,7 @@ else {
             print("\(cyan)-LaunchAgents --> \(colorend)List launch agents, launch daemons, and configuration profile files")
             print("\(cyan)-BrowserHistory --> \(colorend)Attempt to pull Safari, Firefox, Chrome, and Quarantine history")
             print("\(cyan)-SlackExtract --> \(colorend)Check if Slack is present and if so read cookie, downloads, and workspaces info")
-            print("\(cyan)-BashHistory --> \(colorend)Read bash history content")
+            print("\(cyan)-ShellHistory --> \(colorend)Read bash history content")
             print("")
             print("\(yellow)Usage:\(colorend)")
             print("To run all options:  \(binname)")
