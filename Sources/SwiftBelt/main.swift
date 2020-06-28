@@ -921,18 +921,39 @@ func SlackExtract(){
     }
 }
 
-func BashHistory(){
+func ShellHistory(){
     print("\(colorend)\(yellow)##########################################\(colorend)")
-    print("==> Bash History Data:\(green)")
-    var uName = NSUserName()
-    let bashPath = URL(fileURLWithPath: "/Users/\(uName)/.bash_history")
-    do {
-        let bashData = try String(contentsOf: bashPath)
-        print(bashData)
-    } catch {
-        print("\(colorend)\(red)[-] Error reading bash history content for the current user\(colorend)")
-    }
     
+    let uName = NSUserName()
+
+    let bashHistoryPath = "/Users/\(uName)/.bash_history"
+    if fileMan.fileExists(atPath: bashHistoryPath){
+        print("==> Bash History Data:\(green)")
+        let bashHistory = URL(fileURLWithPath: bashHistoryPath)
+        do {
+            let bashData = try String(contentsOf: bashHistory)
+            print(bashData)
+        } catch {
+            print("\(colorend)\(red)[-] Error reading bash history content for the current user\(colorend)")
+        }
+    } else {
+        print("\(red)[-] ~/.bash_history file not found on this host\(colorend)")
+    }
+
+    let zshHistoryPath = "/Users/\(uName)/.zsh_history"
+    if fileMan.fileExists(atPath: zshHistoryPath){
+        print("==> Zsh History Data:\(green)")
+        let zshHistory = URL(fileURLWithPath: zshHistoryPath)
+        do {
+            let zshData = try String(contentsOf: zshHistory)
+            print(zshData)
+        } catch {
+            print("\(colorend)\(red)[-] Error reading Zsh history content for the current user\(colorend)")
+        }
+    } else {
+        print("\(red)[-] ~/.zsh_history file not found on this host\(colorend)")
+    }
+
     print("\(colorend)\(yellow)##########################################\(colorend)")
 }
 
@@ -949,7 +970,7 @@ if CommandLine.arguments.count == 1{
     LaunchAgents()
     BrowserHistory()
     SlackExtract()
-    BashHistory()
+    ShellHistory()
 }
 else {
     for argument in CommandLine.arguments{
@@ -999,8 +1020,8 @@ else {
             if argument.contains("-SlackExtract"){
                 SlackExtract()
             }
-            if argument.contains("-BashHistory"){
-                BashHistory()
+            if argument.contains("-ShellHistory"){
+                ShellHistory()
             }
             
             

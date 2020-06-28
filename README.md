@@ -35,7 +35,7 @@ SwiftBelt Options:
 
 **-SlackExtract** --> Check if Slack is present and if so read cookie, downloads, and workspaces info (leverages research done by Cody Thomas)
 
-**-BashHistory** --> Read bash history content
+**-ShellHistory** --> Read shell (Bash or Zsh) history content
 
 ***Usage:***
 
