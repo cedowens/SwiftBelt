@@ -4,6 +4,8 @@
 
 SwiftBelt is a macOS enumerator inspired by @harmjoy's Windows-based Seatbelt enumeration tool. SwiftBelt does not utilize any command line utilities and instead uses Swift code (leveraging the Cocoa Framework, Foundation libraries, OSAKit libraries, etc.) to perform system enumeration. This can be leveraged on the offensive side to perform enumeration once you gain access to a macOS host. I intentionally did not include any functions that cause pop-ups (ex: keychain enumeration).
 
+Thanks Ramos04 for contributing code to look for various Objective See tools and mattreduce for contributing code for zshell history as well as azure creds.
+
 -----------------------
 
 ![Image](swiftbelt.png)
