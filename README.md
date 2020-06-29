@@ -6,6 +6,9 @@ SwiftBelt is a macOS enumerator inspired by @harmjoy's Windows-based Seatbelt en
 
 -----------------------
 
+![Image](swiftbelt.png)
+
+
 ***Steps***
 
 You can run the included SwiftBelt mach-o binary in the root directory of this repo or you can edit the Swift code and rebuild a new binary.
