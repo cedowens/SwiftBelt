@@ -8,7 +8,7 @@ Thanks Ramos04 for contributing code to look for various Objective See tools and
 
 -----------------------
 
-![Image](swiftbelt.png)
+![Image](swiftbelt2.png)
 
 
 ***Steps***
@@ -41,6 +41,8 @@ SwiftBelt Options:
 **-SlackExtract** --> Check if Slack is present and if so read cookie, downloads, and workspaces info (leverages research done by Cody Thomas)
 
 **-ShellHistory** --> Read shell (Bash or Zsh) history content
+
+**-Bookmarks** --> Read Chrome saved bookmarks
 
 ***Usage:***
 
