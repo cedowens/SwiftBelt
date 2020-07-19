@@ -957,7 +957,31 @@ func ShellHistory(){
     print("\(colorend)\(yellow)##########################################\(colorend)")
 }
 
-
+func Bookmarks(){
+    print("\(colorend)\(yellow)##########################################\(colorend)")
+    
+    let uName = NSUserName()
+    
+    //Chrome Bookmarks
+    if fileMan.fileExists(atPath: "/Users/\(uName)/Library/Application Support/Google/Chrome/Default/Bookmarks"){
+        print("==> Chrome Bookmarks\(green)")
+        do {
+            let sshotPath = URL(fileURLWithPath: "/Users/Cedric.owens/Library/Application Support/Google/Chrome/Default/Bookmarks")
+            let fileData = try String(contentsOf: sshotPath)
+            let list = fileData.components(separatedBy: ",")
+            for each in list {
+                if (each.contains("url") || each.contains("name")) && !(each.contains("\"type\"")){
+                    print(each.replacingOccurrences(of: "}", with: ""))
+                }
+            }
+            
+        } catch {
+            print("\(colorend)\(red)[-] Error reading Chrome bookmarks for user \(uName)\(colorend)")
+        }
+        print("\(colorend)\(yellow)##########################################\(colorend)")
+    }
+    
+}
 
 Banner()
 
@@ -971,6 +995,7 @@ if CommandLine.arguments.count == 1{
     BrowserHistory()
     SlackExtract()
     ShellHistory()
+    Bookmarks()
 }
 else {
     for argument in CommandLine.arguments{
@@ -986,6 +1011,7 @@ else {
             print("\(cyan)-BrowserHistory --> \(colorend)Attempt to pull Safari, Firefox, Chrome, and Quarantine history")
             print("\(cyan)-SlackExtract --> \(colorend)Check if Slack is present and if so read cookie, downloads, and workspaces info")
             print("\(cyan)-ShellHistory --> \(colorend)Read bash history content")
+            print("\(cyan)-Bookmarks --> \(colorend)Read Chrome bookmarks")
             print("")
             print("\(yellow)Usage:\(colorend)")
             print("To run all options:  \(binname)")
@@ -1023,12 +1049,12 @@ else {
             if argument.contains("-ShellHistory"){
                 ShellHistory()
             }
+            if argument.contains("-Bookmarks"){
+                Bookmarks()
+            }
             
             
         }
         
     }
 }
-
-
-
