@@ -147,7 +147,7 @@ func SecCheck(){
             print("\(green)[+] Objective-See Block Block, persistent location monitoring tool, found\(colorend)")
             b = 1
         }
-        if processes2.contains("Netiquete") || fileMan.fileExists(atPath: "/Applications/Netiquette.app",isDirectory: &isDir) {
+        if processes2.contains("Netiquette") || fileMan.fileExists(atPath: "/Applications/Netiquette.app",isDirectory: &isDir) {
             print("\(green)[+] Objective-See Netiquette, network monitoring tool, found\(colorend)")
             b = 1
         }
