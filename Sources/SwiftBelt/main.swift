@@ -57,7 +57,7 @@ func SecCheck(){
             print("\(green)[+] Carbon Black OSX Sensor installed.\(colorend)")
             b = 1
         }
-        if processes2.contains("CbDefense") || fileMan.fileExists(atPath: "/Appllications/Confer.app",isDirectory: &isDir){
+        if processes2.contains("CbDefense") || fileMan.fileExists(atPath: "/Applications/Confer.app",isDirectory: &isDir){
             print("\(green)[+] Carbon Black Defense A/V installed\(colorend)")
             b = 1
         }
