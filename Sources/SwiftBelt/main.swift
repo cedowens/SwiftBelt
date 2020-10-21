@@ -87,7 +87,7 @@ func SecCheck(){
             b = 1
         }
         if processes2.contains("GlobalProtect") || processes2.contains("/PanGPS") || fileMan.fileExists(atPath: "/Library/Logs/PaloAltoNetworks/GlobalProtect",isDirectory: &isDir) || fileMan.fileExists(atPath: "/Library/PaloAltoNetworks",isDirectory: &isDir){
-            print("\(green)[+] Global Protect PAN PVN client running\(colorend)")
+            print("\(green)[+] Global Protect PAN VPN client running\(colorend)")
             b = 1
         }
         if processes2.contains("HostChecker") || processes2.contains("pulsesecure") || fileMan.fileExists(atPath: "/Applications/Pulse Secure.app",isDirectory: &isDir) || processes2.contains("Pulse-Secure"){
