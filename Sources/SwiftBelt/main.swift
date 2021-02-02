@@ -73,12 +73,8 @@ func SecCheck(){
             print("\(green)[+] FireEye HX agent installed\(colorend)")
             b = 1
         }
-        if processes2.contains("falconctl") || fileMan.fileExists(atPath: "/Library/CS/falcond") {
+        if processes2.contains("falconctl") || fileMan.fileExists(atPath: "/Library/CS/falcond") || fileMan.fileExists(atPath: "/Applications/Falcon.app/Contents/Resources") {
             print("\(green)[+] Crowdstrike Falcon agent found\(colorend)")
-            b = 1
-        }
-        if processes2.contains("falconctl") || fileMan.fileExists(atPath: "/Applications/Falcon.app/Contents/Resources") {
-            print("\(green)[+] Crowdstrike Falcon agent found (version 6+)\(colorend)")
             b = 1
         }
         if processes2.contains("OpenDNS") || processes2.contains("opendns") || fileMan.fileExists(atPath: "/Library/Application Support/OpenDNS Roaming Client/dns-updater") {
