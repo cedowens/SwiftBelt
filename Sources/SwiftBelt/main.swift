@@ -69,12 +69,11 @@ func SecCheck(){
             print("\(green)[+] Little snitch firewall found\(colorend)")
             b = 1
         }
-        
         if processes2.contains("xagt") || fileMan.fileExists(atPath: "/Library/FireEye/xagt",isDirectory: &isDir) {
             print("\(green)[+] FireEye HX agent installed\(colorend)")
             b = 1
         }
-        if processes2.contains("falconctl") || fileMan.fileExists(atPath: "/Library/CS/falcond") {
+        if processes2.contains("falconctl") || fileMan.fileExists(atPath: "/Library/CS/falcond") || fileMan.fileExists(atPath: "/Applications/Falcon.app/Contents/Resources") {
             print("\(green)[+] Crowdstrike Falcon agent found\(colorend)")
             b = 1
         }
