@@ -73,7 +73,7 @@ func SecCheck(){
             print("\(green)[+] FireEye HX agent installed\(colorend)")
             b = 1
         }
-        if processes2.contains("falconctl") || fileMan.fileExists(atPath: "/Library/CS/falcond") || fileMan.fileExists(atPath: "/Applications/Falcon.app/Contents/Resources") {
+        if processes2.contains("falcond") || fileMan.fileExists(atPath: "/Library/CS/falcond") || fileMan.fileExists(atPath: "/Applications/Falcon.app/Contents/Resources",isDirectory: &isDir) {
             print("\(green)[+] Crowdstrike Falcon agent found\(colorend)")
             b = 1
         }
