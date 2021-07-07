@@ -1,6 +1,6 @@
 # SwiftBelt
 
-***About***
+## About
 
 SwiftBelt is a macOS enumerator inspired by @harmjoy's Windows-based Seatbelt enumeration tool. SwiftBelt does not utilize any command line utilities and instead uses Swift code (leveraging the Cocoa Framework, Foundation libraries, OSAKit libraries, etc.) to perform system enumeration. This can be leveraged on the offensive side to perform enumeration once you gain access to a macOS host. I intentionally did not include any functions that cause pop-ups (ex: keychain enumeration).
 
@@ -11,18 +11,18 @@ Thanks Ramos04 for contributing code to look for various Objective See tools and
 ![Image](SwiftBelt.png)
 
 
-***Steps***
+## Steps
+1. Ensure swift is installed on your macOS host 
 
-You can run the included SwiftBelt mach-o binary in the root directory of this repo or you can edit the Swift code and rebuild a new binary.
+2. From a terminal cd into the SwiftBelt directory and run: "swift build" to generate the binary. The binary will be dropped in the .build/debug folder inside of the SwiftBelt folder and will be named SwiftBelt
 
-**To use the included mach-o:**
+3. Copy to the desired host and clear the quarantine attribute ($ xattr -c SwiftBelt) and set as executable ($ chmod +x SwiftBelt)
 
-1. Note: I did not sign the included mach-o. Therefore you will need to take these steps to remove the quarantine attribute in order to run: Once downloaded, copy to the desired host and clear the quarantine attribute ($ xattr -c SwiftBelt) and set as executable ($ chmod +x SwiftBelt)
-2. To see the help menu: ./SwiftBelt -h
+4. Execute 
 
-***Help menu:***
+## Help menu:
 
-SwiftBelt Options:
+***SwiftBelt Options:***
 
 **-SecurityTools** --> Check for the presence of common macOS security tools (at least the ones I am familiar with)
 
@@ -46,29 +46,22 @@ SwiftBelt Options:
 
 **-ChromeUsernames** --> Read from ~/Library/Application Support/Google/Chrome/Default/Login Data which stores urls along with usernames for each
 
-***Usage:***
+## Usage:
 
-To run all options:  *./SwiftBelt*
+To run all options:  
 
-To specify certain options:  *./SwiftBelt [option1] [option2] [option3]...*
+> ./SwiftBelt
 
-**Example:  *./SwiftBelt -SystemInfo -Clipboard -SecurityTools ...***
+To specify certain options:  
 
+> ./SwiftBelt [option1] [option2] [option3]...
 
+Example:  
 
-**To edit the Swift code and rebuild your own mach-o:**
-1. Open the xcodeproj file for SwiftBelt in Xcode 
-
-2. Edit the code in main.swift code as needed in Xcode
-
-3. From a terminal cd into the SwiftBelt directory and run: "swift build" to generate the binary. The binary will be dropped in the .build/debug folder inside of the SwiftBelt folder and will be named SwiftBelt
-
-4. Copy to the desired host and clear the quarantine attribute ($ xattr -c SwiftBelt) and set as executable ($ chmod +x SwiftBelt)
-
-5. Execute 
+> ./SwiftBelt -SystemInfo -Clipboard -SecurityTools ...
 
 -----------------------
 
-***Detection***
+## Detection
 
 Though this tool does not use any command line utilities (which are easy to detect), this tool does read from several files on the system which can be detected by any tools that leverage the Endpoint Security Framework (these file reads in particular are captured by ES_EVENT_TYPE_NOTIFY_OPEN events within ESF).
