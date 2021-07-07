@@ -8,7 +8,7 @@ Thanks Ramos04 for contributing code to look for various Objective See tools and
 
 -----------------------
 
-![Image](swiftbelt2.png)
+![Image](SwiftBelt.png)
 
 
 ***Steps***
