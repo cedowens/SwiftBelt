@@ -965,7 +965,7 @@ func Bookmarks(){
     if fileMan.fileExists(atPath: "/Users/\(uName)/Library/Application Support/Google/Chrome/Default/Bookmarks"){
         print("==> Chrome Bookmarks\(green)")
         do {
-            let sshotPath = URL(fileURLWithPath: "/Users/Cedric.owens/Library/Application Support/Google/Chrome/Default/Bookmarks")
+            let sshotPath = URL(fileURLWithPath: "/Users/\(uName)/Library/Application Support/Google/Chrome/Default/Bookmarks")
             let fileData = try String(contentsOf: sshotPath)
             let list = fileData.components(separatedBy: ",")
             for each in list {
