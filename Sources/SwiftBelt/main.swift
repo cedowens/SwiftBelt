@@ -967,6 +967,7 @@ func Bookmarks(){
         do {
             let sshotPath = URL(fileURLWithPath: "/Users/\(uName)/Library/Application Support/Google/Chrome/Default/Bookmarks")
             let fileData = try String(contentsOf: sshotPath)
+            print(fileData)
             let list = fileData.components(separatedBy: ",")
             for each in list {
                 if (each.contains("url") || each.contains("name")) && !(each.contains("\"type\"")){
@@ -982,6 +983,46 @@ func Bookmarks(){
     
 }
 
+func ChromeUsernames(){
+    var uName = NSUserName()
+    if fileMan.fileExists(atPath: "/Users/\(uName)/Library/Application Support/Google/Chrome/Default/Login Data"){
+        print("")
+        print("\u{001B}[0;33m-->Found Chrome Login Data sqlite3 db\u{001B}[0;0m")
+        print("\u{001B}[0;33m---->Attempting to grab username and url info....:\u{001B}[0;0m")
+        var db : OpaquePointer?
+        var dbURL = URL(fileURLWithPath: "/Users/\(uName)/Library/Application Support/Google/Chrome/Default/Login Data")
+        if sqlite3_open(dbURL.path, &db) != SQLITE_OK{
+            print("\(red)[-] Could not open the Chrome Login Data database\(colorend)")
+        } else {
+            print("Format: origin_domain \u{001B}[0;36m || \u{001B}[0;0m username_value")
+            let queryString = "select origin_domain,username_value from stats;"
+            var queryStatement: OpaquePointer? = nil
+            
+            if sqlite3_prepare_v2(db, queryString, -1, &queryStatement, nil) == SQLITE_OK{
+                while sqlite3_step(queryStatement) == SQLITE_ROW{
+                    let col1 = sqlite3_column_text(queryStatement, 0)
+                    if col1 != nil{
+                        nm1 = String(cString: col1!)
+                    }
+                    
+                    let col2 = sqlite3_column_text(queryStatement, 1)
+                    if col2 != nil{
+                        nm2 = String(cString: col2!)
+                    }
+                    
+                    
+                    print("\(nm1) \u{001B}[0;36m || \u{001B}[0;0m \(nm2)")
+            }
+                
+        }
+            else {
+                print("\(red)[-] Chrome Login Data db not found\(colorend)")
+            }
+    }
+    
+}
+}
+
 Banner()
 
 if CommandLine.arguments.count == 1{
@@ -994,6 +1035,7 @@ if CommandLine.arguments.count == 1{
     BrowserHistory()
     SlackExtract()
     ShellHistory()
+    ChromeUsernames()
     Bookmarks()
 }
 else {
@@ -1011,6 +1053,7 @@ else {
             print("\(cyan)-SlackExtract --> \(colorend)Check if Slack is present and if so read cookie, downloads, and workspaces info")
             print("\(cyan)-ShellHistory --> \(colorend)Read bash history content")
             print("\(cyan)-Bookmarks --> \(colorend)Read Chrome bookmarks")
+            print("\(cyan)-ChromeUsernames --> \(colorend)Read Chrome url and username data from the Chrome Login Data db")
             print("")
             print("\(yellow)Usage:\(colorend)")
             print("To run all options:  \(binname)")
@@ -1051,6 +1094,12 @@ else {
             if argument.contains("-Bookmarks"){
                 Bookmarks()
             }
+            
+            if argument.contains("-ChromeUsernames"){
+                ChromeUsernames()
+            }
+            
+            
             
             
         }
