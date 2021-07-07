@@ -44,6 +44,8 @@ SwiftBelt Options:
 
 **-Bookmarks** --> Read Chrome saved bookmarks
 
+**-ChromeUsernames** --> Read from ~/Library/Application Support/Google/Chrome/Default/Login Data which stores urls along with usernames for each
+
 ***Usage:***
 
 To run all options:  *./SwiftBelt*
