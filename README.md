@@ -48,6 +48,8 @@ Thanks Ramos04 for contributing code to look for various Objective See tools and
 
 **-ChromeUsernames** --> Read from ~/Library/Application Support/Google/Chrome/Default/Login Data which stores urls along with usernames for each
 
+**-UniversalAccessAuth** --> Reads from /Library/Preferences/com.apple.universalaccessAuthWarning.plist to show a list of applications that the user has received authorization prompts for along with 1 (for accept) or 2 (for deny)
+
 ## Usage:
 
 To run all options:  
