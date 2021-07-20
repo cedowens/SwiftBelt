@@ -1023,9 +1023,28 @@ func ChromeUsernames(){
 }
 }
 
+func CheckFDA(){
+    print("\(colorend)\(yellow)##########################################\(colorend)")
+    print("==> Full Disk Access Check:")
+    let fileMan = FileManager.default
+    let username = NSUserName()
+    let dbpath = "/Users/\(username)/Library/Application Support/com.apple.TCC/TCC.db"
+    var db : OpaquePointer?
+    var dbURL = URL(fileURLWithPath: dbpath)
+    if sqlite3_open(dbURL.path, &db) != SQLITE_OK {
+        print("\(red)[-] Terminal HAS NOT been grated full disk access - Cannot open the user's TCC db.")
+    }
+    else {
+        print("\(green)[+] Terminal HAS ALREADY been grated full disk access - Can open the user's TCC db")
+        
+    }
+
+}
+
 Banner()
 
 if CommandLine.arguments.count == 1{
+    CheckFDA()
     SecCheck()
     SystemInfo()
     Clipboard()
@@ -1043,6 +1062,7 @@ else {
         if argument.contains("-h"){
             print("Help menu:")
             print("\(yellow)SwiftBelt Options:\(colorend)")
+            print("\(cyan)-CheckFDA -->\(colorend) Check to see if Terminal has already been granted full disk access")
             print("\(cyan)-SecurityTools -->\(colorend) Check for the presence of security tools")
             print("\(cyan)-SystemInfo -->\(colorend) Pull back system info (wifi SSID info, open directory node info, internal IPs, ssh/aws/gcloud cred info, basic system info)")
             print("\(cyan)-Clipboard --> \(colorend)Dump clipboard contents")
@@ -1062,6 +1082,10 @@ else {
             exit(0)
         }
         else {
+            if argument.contains("-CheckFDA"){
+                CheckFDA()
+            }
+            
             if argument.contains("-SecurityTools"){
                 SecCheck()
             }
