@@ -640,7 +640,7 @@ func BrowserHistory(){
         var db : OpaquePointer?
         var dbURL = URL(fileURLWithPath: "/Users/\(username)/Library/Safari/History.db")
         if sqlite3_open(dbURL.path, &db) != SQLITE_OK{
-            print("\(red)[-] Could not open the Safari History.db file for user \(username)\(colorend)")
+            print("\(red)[-] Could not open the Safari History.db file for user \(username)\(colorend). It may be locked due to current use but you can copy it elsewhere and read from it")
         }else {
             //let queryString = "select history_visits.visit_time, history_items.url from history_visits, history_items where history_visits.history_item=history_items.id;"
             let queryString = "select datetime(history_visits.visit_time + 978307200, 'unixepoch') as last_visited, history_items.url from history_visits, history_items where history_visits.history_item=history_items.id order by last_visited;"
@@ -720,7 +720,7 @@ func BrowserHistory(){
                 
             }
             else {
-                print("\(red)[-] Issue with preparing the Chrome History database...this may be because something is currently writing to it (i.e., an active Chrome browser)...kill the browser and try again\(colorend)")
+                print("\(red)[-] Issue with preparing the Chrome History database...this may be because something is currently writing to it (i.e., an active Chrome browser). You can simply copy the locked file elsewhere and read from there\(colorend)")
             }
             
         }
@@ -1016,7 +1016,7 @@ func ChromeUsernames(){
                 
         }
             else {
-                print("\(red)[-] Chrome Login Data db not found\(colorend)")
+                print("\(red)[-] Error opening Chrome user db...may be locked (in use). If so, you can simply copy the Login Data db file elsewhere and read from it...\(colorend)")
             }
     }
     
@@ -1041,6 +1041,31 @@ func CheckFDA(){
 
 }
 
+func UnivAccessAuth(){
+    let username = NSUserName()
+    print("==> com.apple.universalaccessAuthWarning.plist check: (note: 1=allowed, 2=denied)")
+    var pListFormat = PropertyListSerialization.PropertyListFormat.xml
+    var pListData : [String: AnyObject] = [:]
+    var pListPath : String? = Bundle.main.path(forResource: "data", ofType: "plist")
+    
+    if fileMan.fileExists(atPath: "/Users/\(username)/Library/Preferences/com.apple.universalaccessAuthWarning.plist"){
+        let plistURL = URL(fileURLWithPath: "/Users/\(username)/Library/Preferences/com.apple.universalaccessAuthWarning.plist")
+        do {
+            let plistXML = try Data(contentsOf: plistURL)
+            pListData = try PropertyListSerialization.propertyList(from: plistXML, options: .mutableContainers, format: &pListFormat) as! [String:AnyObject]
+            
+            for each in pListData{
+                print("\(green)\(each)\(colorend)")
+            }
+        }
+        catch let error {
+            print("\(red)\(error)")
+        }
+        
+        print("\(colorend)\(yellow)##########################################\(colorend)")
+    }
+}
+
 Banner()
 
 if CommandLine.arguments.count == 1{
@@ -1054,6 +1079,7 @@ if CommandLine.arguments.count == 1{
     BrowserHistory()
     SlackExtract()
     ShellHistory()
+    UnivAccessAuth()
     ChromeUsernames()
     Bookmarks()
 }
@@ -1074,6 +1100,7 @@ else {
             print("\(cyan)-ShellHistory --> \(colorend)Read bash history content")
             print("\(cyan)-Bookmarks --> \(colorend)Read Chrome bookmarks")
             print("\(cyan)-ChromeUsernames --> \(colorend)Read Chrome url and username data from the Chrome Login Data db")
+            print("\(cyan)-UniversalAccessAuth --> \(colorend)Read from universalaccessAuthWarning.plist to see a list of apps that the user has been presented access control dialogs for along with the user's selection (1: allowed, 2: not allowed)")
             print("")
             print("\(yellow)Usage:\(colorend)")
             print("To run all options:  \(binname)")
@@ -1115,6 +1142,10 @@ else {
             if argument.contains("-ShellHistory"){
                 ShellHistory()
             }
+            if argument.contains("-UniversalAccessAuth"){
+                UnivAccessAuth()
+            }
+            
             if argument.contains("-Bookmarks"){
                 Bookmarks()
             }
