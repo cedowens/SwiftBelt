@@ -24,6 +24,8 @@ Thanks Ramos04 for contributing code to look for various Objective See tools and
 
 ***SwiftBelt Options:***
 
+**-CheckFDA** --> Check for Full Disk Access (without generating a TCC prompt to the user even if Terminal has not been granted any TCC permissions). Does this by doing a simple check on the user's TCC.db. Will return wither FDA has already been granted to Terminal or not.
+
 **-SecurityTools** --> Check for the presence of common macOS security tools (at least the ones I am familiar with)
 
 **-SystemInfo** --> Pull back system info (wifi SSID info, open directory node info, internal IPs, ssh/aws/gcloud/azure-cli cred info, basic system info). If present on the host, this tool will display the contents of ssh keys, known hosts file, aws cred files, and gcloud token info
@@ -36,7 +38,7 @@ Thanks Ramos04 for contributing code to look for various Objective See tools and
 
 **-LaunchAgents** --> List launch agents, launch daemons, and configuration profile files
 
-**-BrowserHistory** --> Attempt to pull Safari, Firefox, Chrome, and Quarantine history (note as FYI: if Chrome or Firefox is actively running, the tool will not be able to read the locked database to extract info)
+**-BrowserHistory** --> Attempt to pull Safari, Firefox, Chrome, and Quarantine history (note as FYI: if Chrome or Firefox is actively running, the tool will not be able to read the locked database to extract info). However, the locked db can be copied elsewhere and read from.
 
 **-SlackExtract** --> Check if Slack is present and if so read cookie, downloads, and workspaces info (leverages research done by Cody Thomas)
 
