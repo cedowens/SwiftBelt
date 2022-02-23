@@ -198,6 +198,34 @@ func getaddy() -> [String]{
 }
 
 func SystemInfo(){
+    if let var1 = ProcessInfo.processInfo.environment["__CFBundleIdentifier"]{
+        if !("\(var1)".contains("0")){
+            print("==> Current process context:\(green)")
+            print(var1 + "\(colorend)")
+            
+        }
+        
+    }
+    
+    if let var2 = ProcessInfo.processInfo.environment["XPC_SERVICE_NAME"]{
+        if !("\(var2)".contains("0")){
+            print("==> Current process context:\(green)")
+            print(var2 + "\(colorend)")
+            
+        }
+        
+    }
+    if let var3 = ProcessInfo.processInfo.environment["PACKAGE_PATH"]{
+        if !("\(var3)".contains("0")){
+            print("==> Current process context:\(green)")
+            print(var3 + "\(colorend)")
+            
+        }
+      
+    }
+    
+    
+    
     let myScript = "return (system info)"
     let k = OSAScript.init(source: myScript)
     var compileErr : NSDictionary?
