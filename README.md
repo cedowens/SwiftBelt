@@ -28,7 +28,11 @@ Thanks Ramos04 for contributing code to look for various Objective See tools and
 
 **-SecurityTools** --> Check for the presence of common macOS security tools (at least the ones I am familiar with)
 
-**-SystemInfo** --> Pull back system info (wifi SSID info, open directory node info, internal IPs, ssh/aws/gcloud/azure-cli cred info, basic system info). If present on the host, this tool will display the contents of ssh keys, known hosts file, aws cred files, and gcloud token info
+**-SystemInfo** --> Check for the current execution context, basic system info, last boot time, idle time, info on whether the screen is currently locked or not, and environment variable info
+
+**-LockCheck** --> Check for whether the screen is currently locked or not (I added this as a separate check as well as bundled it within SystemInfo)
+
+**-SearchCreds** --> Search for ssh/aws/azure/gcloud creds
 
 **-Clipboard** --> Dump clipboard contents
 
