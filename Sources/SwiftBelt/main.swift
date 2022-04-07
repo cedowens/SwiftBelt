@@ -171,6 +171,7 @@ func SecCheck(){
     
 }
 
+
 func getaddy() -> [String]{
     //getaddy function code lifted from https://stackoverflow.com/questions/25626117/how-to-get-ip-addresses-in-swift/25627545
     var addresses = [String]()
@@ -224,6 +225,52 @@ func SystemInfo(){
       
     }
     
+    var size = 0
+    let mach2 = "hw.model".cString(using: .utf8)
+    sysctlbyname(mach2, nil, &size, nil, 0)
+    var machine2 = [CChar](repeating: 0, count: Int(size))
+    sysctlbyname(mach2, &machine2, &size, nil, 0)
+    let hwmodel = String(cString: machine2)
+    print("==> Hardware Model: \(green)" + String(cString: machine2) + "\(colorend)")
+
+    if !(hwmodel.contains("Mac")){
+        print("\(red)[-] Host IS running in a VM based on the hardware model value of \(hwmodel)\(colorend)")
+    }
+    else {
+        print("\(green)[+] Host is a physical machine and is not in a VM based on the hardware model value of \(hwmodel)\(colorend)")
+    }
+    
+    var boottime = timeval()
+    var sz = MemoryLayout<timeval>.size
+    sysctlbyname("kern.boottime", &boottime, &sz, nil, 0)
+    let dt = Date(timeIntervalSince1970: Double(boottime.tv_sec) + Double(boottime.tv_usec)/1_000_000.0)
+    print("==> Last boot time: \(green)\(dt)\(colorend)")
+    
+    let mach4 = "kern.version".cString(using: .utf8)
+    sysctlbyname(mach4, nil, &size, nil, 0)
+    var machine4 = [CChar](repeating: 0, count: Int(size))
+    sysctlbyname(mach4, &machine4, &size, nil, 0)
+    print("==> Kernel Info: \(green)" + String(cString: machine4) + "\(colorend)")
+    
+    let dev2 = IOServiceMatching("IOHIDSystem")
+    let usbinfo1 : io_service_t = IOServiceGetMatchingService(kIOMasterPortDefault, dev2)
+    let usbInfoAsString = IORegistryEntryCreateCFProperty(usbinfo1, kIOHIDIdleTimeKey as CFString, kCFAllocatorDefault, 0)
+    IOObjectRelease(usbinfo1)
+    let usbinfo2: CFTypeRef = usbInfoAsString!.takeUnretainedValue()
+    let idleTime = Int("\(usbinfo2)")
+    let idleTime2 = idleTime!/1000000000
+    print("==> Idle Time (no keyboard/mouse interaction) in seconds: \(green)\(idleTime2)\(colorend)")
+    
+    let cgdict = CGSessionCopyCurrentDictionary()!
+
+    let dict = cgdict as? [String: AnyObject]
+    if dict!["CGSSessionScreenIsLocked"] != nil {
+        print("\(green)[+] The screen IS currently locked!\(colorend)")
+    }
+    else {
+        print("[-] The screen is \(red)NOT\(colorend) currently locked!")
+    }
+    
     
     
     let myScript = "return (system info)"
@@ -269,7 +316,7 @@ func SystemInfo(){
         print("\(red)[-] Error checking Open Directory Nodes.\(colorend)")
     }
     print("")
-    print("\(green)Wifi SSIDs found:\(colorend)")
+    
     var plistFormat = PropertyListSerialization.PropertyListFormat.xml
     var pListData : [String: AnyObject] = [:]
     let pListPath : String? = Bundle.main.path(forResource: "data", ofType: "plist")
@@ -283,6 +330,7 @@ func SystemInfo(){
             
             for each in pListData{
                 if each.key == "KnownNetworks"{
+                    print("\(green)Wifi SSID found:\(colorend)")
                     print("\(each.value)")
                         
                     }
@@ -310,6 +358,25 @@ func SystemInfo(){
     }
     
     print("")
+    
+    print("\(colorend)\(yellow)##########################################\(colorend)")
+}
+
+func LockCheck(){
+    let cgdict = CGSessionCopyCurrentDictionary()!
+
+    let dict = cgdict as? [String: AnyObject]
+    if dict!["CGSSessionScreenIsLocked"] != nil {
+        print("\(green)[+] The screen IS currently locked!\(colorend)")
+    }
+    else {
+        print("[-] The screen is \(red)NOT\(colorend) currently locked!")
+    }
+    
+    print("\(colorend)\(yellow)##########################################\(colorend)")
+}
+
+func SearchCreds() {
     print("\(colorend)SSH/AWS/gcloud Credentials Search:\(green)")
     let uName = NSUserName()
     if fileMan.fileExists(atPath: "/Users/\(uName)/.ssh",isDirectory: &isDir){
@@ -423,6 +490,7 @@ func SystemInfo(){
     }
     
     print("\(colorend)\(yellow)##########################################\(colorend)")
+    
 }
 
 func Clipboard(){
@@ -1053,19 +1121,36 @@ func ChromeUsernames(){
 
 func CheckFDA(){
     print("\(colorend)\(yellow)##########################################\(colorend)")
+    var p1 : Int = 0
     print("==> Full Disk Access Check:")
-    let fileMan = FileManager.default
+    let queryString = "kMDItemDisplayName = *TCC.db"
     let username = NSUserName()
-    let dbpath = "/Users/\(username)/Library/Application Support/com.apple.TCC/TCC.db"
-    var db : OpaquePointer?
-    var dbURL = URL(fileURLWithPath: dbpath)
-    if sqlite3_open(dbURL.path, &db) != SQLITE_OK {
-        print("\(red)[-] Terminal HAS NOT been grated full disk access - Cannot open the user's TCC db.")
-    }
-    else {
-        print("\(green)[+] Terminal HAS ALREADY been grated full disk access - Can open the user's TCC db")
+    if let query = MDQueryCreate(kCFAllocatorDefault, queryString as CFString, nil, nil) {
+        MDQueryExecute(query, CFOptionFlags(kMDQuerySynchronous.rawValue))
+
+        for i in 0..<MDQueryGetResultCount(query) {
+            if let rawPtr = MDQueryGetResultAtIndex(query, i) {
+                let item = Unmanaged<MDItem>.fromOpaque(rawPtr).takeUnretainedValue()
+                if let path = MDItemCopyAttribute(item, kMDItemPath) as? String {
+                   
+                    if path.hasSuffix("/Users/\(username)/Library/Application Support/com.apple.TCC/TCC.db"){
+                        p1 = p1 + 1
+                        
+                    }
+                    
+                }
+            }
+        }
         
+        if p1 > 0 {
+            print("\(green)[+] Your app context HAS ALREADY been given full disk access (mdquery API calls can see the user's TCC database)\(colorend)")
+        }
+        else {
+            print("\(yellow)[-] Your app context HAS NOT been given full disk access yet (mdquery API calls cannot see the user's TCC database)\(colorend)")
+        }
+
     }
+    print("\(colorend)\(yellow)##########################################\(colorend)")
 
 }
 
@@ -1100,6 +1185,7 @@ if CommandLine.arguments.count == 1{
     CheckFDA()
     SecCheck()
     SystemInfo()
+    SearchCreds()
     Clipboard()
     RunningApps()
     ListUsers()
@@ -1118,7 +1204,9 @@ else {
             print("\(yellow)SwiftBelt Options:\(colorend)")
             print("\(cyan)-CheckFDA -->\(colorend) Check to see if Terminal has already been granted full disk access")
             print("\(cyan)-SecurityTools -->\(colorend) Check for the presence of security tools")
-            print("\(cyan)-SystemInfo -->\(colorend) Pull back system info (wifi SSID info, open directory node info, internal IPs, ssh/aws/gcloud cred info, basic system info)")
+            print("\(cyan)-SystemInfo -->\(colorend) Pull back system info (wifi SSID info, open directory node info, internal IPs,  basic system info)")
+            print("\(cyan)-LockCheck -->\(colorend) Check if the screen is currently locked using CGSession API calls")
+            print("\(cyan)-SearchCreds -->\(colorend) Searches for ssh/aws/azure/gcloud creds")
             print("\(cyan)-Clipboard --> \(colorend)Dump clipboard contents")
             print("\(cyan)-RunningApps --> \(colorend)List all running apps")
             print("\(cyan)-ListUsers --> \(colorend)List local user accounts")
@@ -1147,6 +1235,14 @@ else {
             
             if argument.contains("-SystemInfo"){
                 SystemInfo()
+            }
+            
+            if argument.contains("-LockCheck"){
+                LockCheck()
+            }
+            
+            if argument.contains("-SearchCreds"){
+                SearchCreds()
             }
             
             if argument.contains("-Clipboard"){
