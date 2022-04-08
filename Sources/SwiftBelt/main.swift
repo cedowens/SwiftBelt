@@ -1179,6 +1179,53 @@ func UnivAccessAuth(){
     }
 }
 
+func StickieNotes(){
+    var canary = 0
+    let username = NSUserName()
+    var isDir = ObjCBool(true)
+    print("==> Checking for Stickie Note contents:")
+    if fileMan.fileExists(atPath: "/Users/\(username)/Library/Containers/com.apple.Stickies/Data/Library/Stickies",isDirectory: &isDir){
+        do {
+            var stickie_files = try fileMan.contentsOfDirectory(atPath: "/Users/\(username)/Library/Containers/com.apple.Stickies/Data/Library/Stickies")
+            if stickie_files.count > 1{
+                print("\(green) [+] Stickie Files Found!\(colorend)")
+                print("Stickie Note Contents:")
+                if stickie_files.contains(".SavedStickiesState"){
+                    for file in stickie_files{
+                        if file.hasSuffix(".rtfd"){
+                            canary = canary + 1
+                            var dirname = "/Users/\(username)/Library/Containers/com.apple.Stickies/Data/Library/Stickies/\(file)"
+                            
+                            var dircontents = try fileMan.contentsOfDirectory(atPath: "/Users/\(username)/Library/Containers/com.apple.Stickies/Data/Library/Stickies/\(file)")
+                            for k in dircontents{
+                                if k.contains("TXT.rtf"){
+                                    
+                                    var stickiedata = try String(contentsOfFile: "/Users/\(username)/Library/Containers/com.apple.Stickies/Data/Library/Stickies/\(file)/\(k)")
+                                    print("\(green)\(stickiedata)\(colorend)")
+                                    
+                                }
+                            }
+                        }
+                    }
+                }
+                
+
+                
+            }
+
+            
+        }
+        catch (let error){
+            print("[-]\(red)\(error)\(colorend)")
+            
+        }
+        
+    }
+    if canary == 0 {
+        print("\(yellow)[-] No stickie file contents found on this host\(colorend)")
+    }
+}
+
 Banner()
 
 if CommandLine.arguments.count == 1{
@@ -1196,6 +1243,7 @@ if CommandLine.arguments.count == 1{
     UnivAccessAuth()
     ChromeUsernames()
     Bookmarks()
+    StickieNotes()
 }
 else {
     for argument in CommandLine.arguments{
@@ -1217,6 +1265,7 @@ else {
             print("\(cyan)-Bookmarks --> \(colorend)Read Chrome bookmarks")
             print("\(cyan)-ChromeUsernames --> \(colorend)Read Chrome url and username data from the Chrome Login Data db")
             print("\(cyan)-UniversalAccessAuth --> \(colorend)Read from universalaccessAuthWarning.plist to see a list of apps that the user has been presented access control dialogs for along with the user's selection (1: allowed, 2: not allowed)")
+            print("\(cyan)-StickieNotes --> \(colorend)Reads any open stickie note contents on the host")
             print("")
             print("\(yellow)Usage:\(colorend)")
             print("To run all options:  \(binname)")
@@ -1276,6 +1325,10 @@ else {
             
             if argument.contains("-ChromeUsernames"){
                 ChromeUsernames()
+            }
+            
+            if argument.contains("-StickieNotes"){
+                StickieNotes()
             }
             
             
