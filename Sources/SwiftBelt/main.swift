@@ -225,6 +225,16 @@ func SystemInfo(){
       
     }
     
+    var aCheck = AXIsProcessTrusted()
+    print("==> Accessibility TCC Check:")
+    if aCheck{
+        print("\(green)[+] Your current app context DOES have Accessibility TCC permissions!\(colorend)")
+    }
+    else {
+        print("\(red)[-] Your current app context does NOT have Accessibility TCC permissions!\(colorend)")
+        
+    }
+    
     var size = 0
     let mach2 = "hw.model".cString(using: .utf8)
     sysctlbyname(mach2, nil, &size, nil, 0)
