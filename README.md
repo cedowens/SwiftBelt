@@ -8,7 +8,7 @@ Thanks Ramos04 for contributing code to look for various Objective See tools and
 
 -----------------------
 
-![Image](Swiftbelt-help.png)
+![Image](Swiftbelt-Help.png)
 
 
 ## Steps
@@ -55,6 +55,8 @@ Thanks Ramos04 for contributing code to look for various Objective See tools and
 **-UniversalAccessAuth** --> Reads from /Library/Preferences/com.apple.universalaccessAuthWarning.plist to show a list of applications that the user has received authorization prompts for along with 1 (for accept) or 2 (for deny)
 
 **-StickieNotes** --> Reads the contents of any open Stickie Note files on the system
+
+**-TextEditCheck** --> Checks for unsaved TextEdit documents and attempts to read file contents
 
 
 ## Usage:
