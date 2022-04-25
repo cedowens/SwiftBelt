@@ -372,6 +372,42 @@ func SystemInfo(){
     print("\(colorend)\(yellow)##########################################\(colorend)")
 }
 
+func TextEditCheck(){
+    let username = NSUserName()
+    let path = "/Users/\(username)/Library/Containers/com.apple.TextEdit/Data/Library/Autosave Information"
+    var dir = ObjCBool(true)
+    var tcanary = 0
+    
+    if fileMan.fileExists(atPath: path, isDirectory: &dir){
+        print("\n==> TextEdit autosave temp dir found...checking for unsaved TextEdit documents...")
+        do {
+            var tempDirContents = try fileMan.contentsOfDirectory(atPath: path)
+            if tempDirContents.count > 1 {
+                    for file in tempDirContents{
+                        if file.hasSuffix(".rtf"){
+                            tcanary = tcanary + 1
+                            var filecontents = try String(contentsOfFile: "/Users/\(username)/Library/Containers/com.apple.TextEdit/Data/Library/Autosave Information/\(file)")
+                            print("Unsaved TextEdit file contents:")
+                            print("\(green)\(filecontents)\(colorend)")
+                        }
+                    }
+            }
+            
+            if tcanary == 0 {
+                print("\(yellow)[-] No unsaved TextEdit documents found...\(colorend)")
+            }
+            
+        }
+        catch (let error){
+            print("\(red)\(error)\(colorend)")
+            
+        }
+
+    
+        
+    }
+}
+
 func LockCheck(){
     let cgdict = CGSessionCopyCurrentDictionary()!
 
@@ -1254,6 +1290,7 @@ if CommandLine.arguments.count == 1{
     ChromeUsernames()
     Bookmarks()
     StickieNotes()
+    TextEditCheck()
 }
 else {
     for argument in CommandLine.arguments{
@@ -1276,6 +1313,7 @@ else {
             print("\(cyan)-ChromeUsernames --> \(colorend)Read Chrome url and username data from the Chrome Login Data db")
             print("\(cyan)-UniversalAccessAuth --> \(colorend)Read from universalaccessAuthWarning.plist to see a list of apps that the user has been presented access control dialogs for along with the user's selection (1: allowed, 2: not allowed)")
             print("\(cyan)-StickieNotes --> \(colorend)Reads any open stickie note contents on the host")
+            print("\(cyan)-TextEditCheck --> \(colorend)Check for unsaved TextEdit documents and attempt to read file contents")
             print("")
             print("\(yellow)Usage:\(colorend)")
             print("To run all options:  \(binname)")
@@ -1339,6 +1377,10 @@ else {
             
             if argument.contains("-StickieNotes"){
                 StickieNotes()
+            }
+            
+            if argument.contains("-TextEditCheck"){
+                TextEditCheck()
             }
             
             
