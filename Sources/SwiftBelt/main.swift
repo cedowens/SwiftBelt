@@ -21,6 +21,8 @@ let colorend = "\u{001B}[0;0m"
 var hiddenString = ""
 var nm1 = ""
 var nm2 = ""
+var nm3 = ""
+var nm4 = ""
 
 func Banner(){
     print("\(cyan)++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\(colorend)")
@@ -1272,6 +1274,58 @@ func StickieNotes(){
     }
 }
 
+func JupyterCheck(){
+    let uName = NSUserName()
+    var isDir = ObjCBool(true)
+    if fileMan.fileExists(atPath: "/Users/\(uName)/.ipython",isDirectory: &isDir){
+        do {
+            print("\(colorend)==>.ipython Directory Found:\(green)")
+            var db : OpaquePointer?
+            var dbURL = URL(fileURLWithPath: "/Users/\(uName)/.ipython/profile_default/history.sqlite")
+            if sqlite3_open(dbURL.path, &db) != SQLITE_OK{
+                print("\(red)[-] Could not open the ipython history.sqlite database\(colorend)")
+            } else {
+                print("\(colorend)[+] Results of previously executed ipython commands:\(green)")
+                let queryString = "select * from history;"
+                var queryStatement: OpaquePointer? = nil
+                if sqlite3_prepare_v2(db, queryString, -1, &queryStatement, nil) == SQLITE_OK{
+                    while sqlite3_step(queryStatement) == SQLITE_ROW{
+                        let col1 = sqlite3_column_text(queryStatement, 0)
+                        if col1 != nil{
+                            nm1 = String(cString: col1!)
+                        }
+                        let col2 = sqlite3_column_text(queryStatement, 1)
+                        if col2 != nil{
+                            nm2 = String(cString: col2!)
+                        }
+                        
+                        let col3 = sqlite3_column_text(queryStatement, 2)
+                        if col3 != nil{
+                            nm3 = String(cString: col3!)
+                        }
+                        
+                        let col4 = sqlite3_column_text(queryStatement, 3)
+                        if col4 != nil{
+                            nm4 = String(cString: col4!)
+                        }
+                        
+                        print("session: \(nm1)  |  line: \(nm2) | source text: \(nm3) | source_raw text: \(nm4)")
+                    }
+                    sqlite3_finalize(queryStatement)
+                }
+            }
+            
+        }
+        catch {
+            print("\(red)[-] Error attempting to get contents of ~/.ipython/profile_default/history.sqlite\(colorend)")
+        }
+        
+    } else {
+        print("\(red)[-] ~/.ipython/profile_default/history.sqlite not found on this host\(colorend)")
+    }
+    
+}
+
 Banner()
 
 if CommandLine.arguments.count == 1{
@@ -1291,6 +1345,7 @@ if CommandLine.arguments.count == 1{
     Bookmarks()
     StickieNotes()
     TextEditCheck()
+    JupyterCheck()
 }
 else {
     for argument in CommandLine.arguments{
@@ -1314,6 +1369,7 @@ else {
             print("\(cyan)-UniversalAccessAuth --> \(colorend)Read from universalaccessAuthWarning.plist to see a list of apps that the user has been presented access control dialogs for along with the user's selection (1: allowed, 2: not allowed)")
             print("\(cyan)-StickieNotes --> \(colorend)Reads any open stickie note contents on the host")
             print("\(cyan)-TextEditCheck --> \(colorend)Check for unsaved TextEdit documents and attempt to read file contents")
+            print("\(cyan)-JupyterCheck -->\(colorend)Attempt to read from the ipython history db if present")
             print("")
             print("\(yellow)Usage:\(colorend)")
             print("To run all options:  \(binname)")
@@ -1381,6 +1437,10 @@ else {
             
             if argument.contains("-TextEditCheck"){
                 TextEditCheck()
+            }
+            
+            if argument.contains("-JupyterCheck"){
+                JupyterCheck()
             }
             
             
