@@ -58,6 +58,8 @@ Thanks Ramos04 for contributing code to look for various Objective See tools and
 
 **-TextEditCheck** --> Checks for unsaved TextEdit documents and attempts to read file contents
 
+**-JupyterCheck** --> Checks for the presence of the ipython history db (which Jupyter notebook uses) and if found reads the contents (which includes python commands executed)
+
 
 ## Usage:
 
